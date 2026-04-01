@@ -63,7 +63,7 @@ export default function Hero({ openModal }) {
         .hero__bg {
           position: absolute;
           inset: 0;
-          background: url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1800&q=80') center/cover no-repeat;
+          background: url('https://images.unsplash.com/photo-1560749003-f4b1e17e2dff?w=1800&q=80') center/cover no-repeat;
         }
         .hero__overlay {
           position: absolute;

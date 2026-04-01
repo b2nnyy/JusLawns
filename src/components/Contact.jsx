@@ -7,7 +7,7 @@ export default function Contact() {
   const [submitting, setSubmitting] = useState(false);
 
   // REPLACE: Formspree — create account at formspree.io and replace YOUR_FORM_ID
-  const FORMSPREE_ID = 'YOUR_FORM_ID';
+  const FORMSPREE_ID = 'mzdkvynr';
   const formspreeReady = FORMSPREE_ID !== 'YOUR_FORM_ID';
 
   const handleSubmit = async (e) => {
