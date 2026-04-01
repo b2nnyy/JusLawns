@@ -55,6 +55,7 @@ This folder contains the reusable building blocks for the current **4-page hybri
 - High-priority conversion section
 - Tabbed pricing for recurring, one-time, monthly plans, and trash bin sanitation
 - Plan CTAs were updated to push quote intent faster
+- Monthly plan cards now use clear `Starting at $X/month` wording with a short note that final pricing varies by property size and service needs
 
 ### `Services.jsx`
 - 8-card service grid fed by `siteData.js`

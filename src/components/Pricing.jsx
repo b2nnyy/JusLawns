@@ -26,29 +26,35 @@ function PriceTable({ rows }) {
 
 function PlanCards({ openModal }) {
   return (
-    <div className="pricing__plans">
-      {plans.map((plan, i) => (
-        <div key={i} className={`pricing__plan${plan.featured ? ' pricing__plan--featured' : ''}`}>
-          {plan.badge && <span className="pricing__plan-badge">{plan.badge}</span>}
-          <h3>{plan.name}</h3>
-          <div className="pricing__plan-price">
-            <span className="pricing__plan-amount">{plan.price}</span>
-            <span className="pricing__plan-suffix">{plan.priceSuffix}</span>
+    <>
+      <div className="pricing__plans">
+        {plans.map((plan, i) => (
+          <div key={i} className={`pricing__plan${plan.featured ? ' pricing__plan--featured' : ''}`}>
+            {plan.badge && <span className="pricing__plan-badge">{plan.badge}</span>}
+            <h3>{plan.name}</h3>
+            <div className="pricing__plan-price">
+              <span className="pricing__plan-label">Starting at</span>
+              <span className="pricing__plan-amount">{plan.price}</span>
+              <span className="pricing__plan-suffix">/month</span>
+            </div>
+            <p className="pricing__plan-note">
+              Final monthly pricing varies by property size and service needs.
+            </p>
+            <ul>
+              {plan.features.map((feat, j) => (
+                <li key={j}><FiCheck size={16} /> {feat}</li>
+              ))}
+            </ul>
+            <button
+              className={`btn ${plan.featured ? 'btn-gold' : 'btn-outline'}`}
+              onClick={openModal}
+            >
+              Get My Quote
+            </button>
           </div>
-          <ul>
-            {plan.features.map((feat, j) => (
-              <li key={j}><FiCheck size={16} /> {feat}</li>
-            ))}
-          </ul>
-          <button
-            className={`btn ${plan.featured ? 'btn-gold' : 'btn-outline'}`}
-            onClick={openModal}
-          >
-            Get My Quote
-          </button>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </>
   );
 }
 
@@ -218,7 +224,20 @@ export default function Pricing({ openModal }) {
           margin-bottom: 8px;
         }
         .pricing__plan-price {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: baseline;
+          gap: 6px;
           margin-bottom: 24px;
+        }
+        .pricing__plan-label {
+          display: block;
+          width: 100%;
+          font-size: 0.78rem;
+          font-weight: 600;
+          letter-spacing: 1.6px;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.45);
         }
         .pricing__plan-amount {
           font-family: var(--font-display);
@@ -228,6 +247,12 @@ export default function Pricing({ openModal }) {
         }
         .pricing__plan-suffix {
           font-size: 1rem;
+          color: rgba(255, 255, 255, 0.5);
+        }
+        .pricing__plan-note {
+          margin-bottom: 20px;
+          font-size: 0.8rem;
+          line-height: 1.6;
           color: rgba(255, 255, 255, 0.5);
         }
         .pricing__plan ul {
