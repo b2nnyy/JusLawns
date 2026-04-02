@@ -1,5 +1,5 @@
 export const businessInfo = {
-  name: "Jus Lawns LLC",
+  name: "JusLawns",
   slogan: "Let us do your dirty work.",
   contactName: "Amirah Roney",
   phone: "267-855-7550",
@@ -13,7 +13,7 @@ export const businessInfo = {
 
 export const aboutCopy = {
   paragraphs: [
-    "Jus Lawns LLC provides reliable lawn care services designed to make property maintenance simple and stress-free for homeowners.",
+    "JusLawns provides reliable lawn care services designed to make property maintenance simple and stress-free for homeowners.",
     "We focus on consistency, detail, and professional results so your yard always looks clean and well maintained.",
     "Our goal is dependable service, clear communication, and strong curb appeal results every visit.",
   ],

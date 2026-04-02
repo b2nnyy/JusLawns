@@ -29,7 +29,7 @@ export default function LoginGate({ children }) {
   return (
     <div className="login-gate">
       <div className="login-gate__card">
-        <h1 className="login-gate__brand">Jus Lawns LLC</h1>
+        <h1 className="login-gate__brand">JusLawns</h1>
         <p className="login-gate__tagline">Site preview — authorized access only</p>
         <form className="login-gate__form" onSubmit={handleSubmit}>
           {error && <div className="login-gate__error">{error}</div>}

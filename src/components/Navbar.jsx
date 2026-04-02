@@ -40,7 +40,7 @@ export default function Navbar({ openModal }) {
     <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="navbar__inner container">
         <Link to="/" className="navbar__logo">
-          Jus <span>Lawns</span>
+          Jus<span>Lawns</span>
         </Link>
 
         <ul className="navbar__links">

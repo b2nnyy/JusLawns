@@ -1,6 +1,6 @@
-# Jus Lawns LLC — Website
+# JusLawns — Website
 
-Revenue-first static website for **Jus Lawns LLC**, built with React + Vite for GitHub Pages. The current build is a **hybrid 4-page funnel** designed to get visitors to pricing, service coverage, and quote actions faster than the original long-scroll homepage.
+Revenue-first static website for **JusLawns**, built with React + Vite for GitHub Pages. The current build is a **hybrid 4-page funnel** designed to get visitors to pricing, service coverage, and quote actions faster than the original long-scroll homepage.
 
 ## Tech Stack
 
