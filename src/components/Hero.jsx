@@ -45,10 +45,6 @@ export default function Hero({ openModal }) {
             <strong>20+</strong>
             <span>Neighborhoods</span>
           </div>
-          <div className="hero__stat">
-            <strong>5★</strong>
-            <span>Rated</span>
-          </div>
         </div>
       </div>
 
