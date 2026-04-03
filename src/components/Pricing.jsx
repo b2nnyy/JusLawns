@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { recurringPricing, oneTimePricing, binPricing, plans } from '../data/siteData';
-import { FiCheck } from 'react-icons/fi';
+import { FiCheck, FiUsers } from 'react-icons/fi';
 
 const tabs = ['Recurring Mowing', 'One-Time Services', 'Monthly Plans', 'Trash Bin Sanitation'];
 
@@ -90,7 +90,7 @@ export default function Pricing({ openModal }) {
         </div>
 
         <div className="pricing__discount">
-          <span className="pricing__discount-icon">🏘️</span>
+          <span className="pricing__discount-icon"><FiUsers size={24} /></span>
           <div>
             <h3>Neighborhood Block Discount</h3>
             <p>

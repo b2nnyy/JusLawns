@@ -1,4 +1,12 @@
 import { aboutCopy } from '../data/siteData';
+import { FiRepeat, FiSearch, FiMessageCircle, FiMapPin } from 'react-icons/fi';
+
+const valueIconMap = {
+  repeat: FiRepeat,
+  search: FiSearch,
+  message: FiMessageCircle,
+  pin: FiMapPin,
+};
 
 export default function About() {
   return (
@@ -7,7 +15,7 @@ export default function About() {
         <div className="about__image-col">
           {/* REPLACE: About section — add team or property photo (recommended: 800x1000px portrait) */}
           <div className="about__image-placeholder">
-            <span>📷</span>
+            <FiMapPin size={48} />
             <p>Team / Lawn Photo</p>
           </div>
           <div className="about__float-card">
@@ -25,15 +33,18 @@ export default function About() {
           ))}
 
           <div className="about__values">
-            {aboutCopy.values.map((val, i) => (
+            {aboutCopy.values.map((val, i) => {
+              const Icon = valueIconMap[val.icon];
+              return (
               <div key={i} className="about__value">
-                <span className="about__value-icon">{val.icon}</span>
+                <span className="about__value-icon">{Icon && <Icon size={20} />}</span>
                 <div>
                   <strong>{val.title}</strong>
                   <p>{val.body}</p>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>

@@ -1,4 +1,19 @@
 import { services } from '../data/siteData';
+import {
+  FiScissors, FiHome, FiDroplet, FiTrash2, FiWind, FiLayers,
+} from 'react-icons/fi';
+import { LuTreeDeciduous, LuSprout } from 'react-icons/lu';
+
+const iconMap = {
+  mowing: LuSprout,
+  scissors: FiScissors,
+  tree: LuTreeDeciduous,
+  layers: FiLayers,
+  wind: FiWind,
+  home: FiHome,
+  droplet: FiDroplet,
+  trash: FiTrash2,
+};
 
 export default function Services() {
   return (
@@ -12,15 +27,18 @@ export default function Services() {
         </p>
 
         <div className="services__grid">
-          {services.map((svc, i) => (
-            <div key={i} className="services__card">
-              <div className="services__accent" />
-              <span className="services__icon">{svc.icon}</span>
-              <h3>{svc.title}</h3>
-              <p>{svc.description}</p>
-              <span className="services__price">{svc.price}</span>
-            </div>
-          ))}
+          {services.map((svc, i) => {
+            const Icon = iconMap[svc.icon];
+            return (
+              <div key={i} className="services__card">
+                <div className="services__accent" />
+                <span className="services__icon">{Icon && <Icon size={28} />}</span>
+                <h3>{svc.title}</h3>
+                <p>{svc.description}</p>
+                <span className="services__price">{svc.price}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 

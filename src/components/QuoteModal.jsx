@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FiX } from 'react-icons/fi';
+import { FiX, FiCheckCircle } from 'react-icons/fi';
 import { businessInfo, serviceDropdownOptions } from '../data/siteData';
 
 export default function QuoteModal({ isOpen, onClose }) {
@@ -61,7 +61,7 @@ export default function QuoteModal({ isOpen, onClose }) {
 
         {submitted ? (
           <div className="modal-success">
-            <span>✅</span>
+            <FiCheckCircle size={40} color="var(--green-accent)" />
             <h3>Quote Request Sent!</h3>
             <p>We'll get back to you shortly with a free estimate. Thank you!</p>
             <button className="btn btn-gold" onClick={onClose}>Close</button>

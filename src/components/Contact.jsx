@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiPhone, FiMail, FiMapPin, FiClock } from 'react-icons/fi';
+import { FiPhone, FiMail, FiMapPin, FiClock, FiCheckCircle } from 'react-icons/fi';
 import { businessInfo, serviceDropdownOptions } from '../data/siteData';
 
 export default function Contact() {
@@ -69,7 +69,7 @@ export default function Contact() {
         <div className="contact__form-card">
           {submitted ? (
             <div className="contact__success">
-              <span>✅</span>
+              <FiCheckCircle size={40} color="var(--green-accent)" />
               <h3>Thank You!</h3>
               <p>We received your quote request and will be in touch shortly.</p>
             </div>

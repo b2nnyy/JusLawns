@@ -1,9 +1,11 @@
+import { FiCheck, FiLock, FiCalendar, FiStar, FiPhone } from 'react-icons/fi';
+
 const items = [
-  { icon: '✓', text: 'Free Estimates Always' },
-  { icon: '🔒', text: 'Secure Online Payments' },
-  { icon: '📅', text: 'Weekly & Biweekly Plans' },
-  { icon: '⭐', text: 'Consistent, Reliable Service' },
-  { icon: '📞', text: 'Mon–Sat, 8AM–6PM' },
+  { icon: FiCheck, text: 'Free Estimates Always' },
+  { icon: FiLock, text: 'Secure Online Payments' },
+  { icon: FiCalendar, text: 'Weekly & Biweekly Plans' },
+  { icon: FiStar, text: 'Consistent, Reliable Service' },
+  { icon: FiPhone, text: 'Mon–Sat, 8AM–6PM' },
 ];
 
 export default function TrustStrip() {
@@ -12,7 +14,7 @@ export default function TrustStrip() {
       <div className="trust-strip__inner container">
         {items.map((item, i) => (
           <div key={i} className="trust-strip__item">
-            <span className="trust-strip__dot">{item.icon}</span>
+            <span className="trust-strip__dot"><item.icon size={14} /></span>
             <span>{item.text}</span>
           </div>
         ))}
