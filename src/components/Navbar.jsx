@@ -6,6 +6,7 @@ import { businessInfo } from '../data/siteData';
 const navLinks = [
   { label: 'Home', to: '/' },
   { label: 'Services & Pricing', to: '/services-pricing' },
+  { label: 'Book a Service', to: '/book' },
   { label: 'Service Area', to: '/service-area' },
   { label: 'Contact / Quote', to: '/contact-quote' },
 ];
@@ -40,6 +41,7 @@ export default function Navbar({ openModal }) {
     <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="navbar__inner container">
         <Link to="/" className="navbar__logo">
+          <img src="/juslawns-logo.png" alt="JusLawns" className="navbar__logo-img" />
           Jus<span>Lawns</span>
         </Link>
 
@@ -118,11 +120,20 @@ export default function Navbar({ openModal }) {
           height: 100%;
         }
         .navbar__logo {
+          display: flex;
+          align-items: center;
+          gap: 10px;
           font-family: var(--font-display);
           font-size: 1.5rem;
           font-weight: 700;
           color: #fff;
           text-decoration: none;
+        }
+        .navbar__logo-img {
+          height: 42px;
+          width: auto;
+          mix-blend-mode: multiply;
+          filter: brightness(0) invert(1);
         }
         .navbar__logo span {
           color: var(--gold);

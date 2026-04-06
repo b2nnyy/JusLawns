@@ -2,9 +2,16 @@ import { useState, useEffect } from 'react';
 import { FiX, FiCheckCircle } from 'react-icons/fi';
 import { businessInfo, serviceDropdownOptions } from '../data/siteData';
 
-export default function QuoteModal({ isOpen, onClose }) {
+export default function QuoteModal({ isOpen, onClose, preselectedService = '' }) {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [selectedService, setSelectedService] = useState('');
+
+  useEffect(() => {
+    if (isOpen && preselectedService) {
+      setSelectedService(preselectedService);
+    }
+  }, [isOpen, preselectedService]);
 
   useEffect(() => {
     const handleEsc = (e) => { if (e.key === 'Escape') onClose(); };
@@ -21,6 +28,7 @@ export default function QuoteModal({ isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) {
       setSubmitted(false);
+      setSelectedService('');
     }
   }, [isOpen]);
 
@@ -94,7 +102,13 @@ export default function QuoteModal({ isOpen, onClose }) {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="m-service">Service Needed</label>
-                  <select id="m-service" name="service">
+                  <select
+                    id="m-service"
+                    name="service"
+                    required
+                    value={selectedService}
+                    onChange={(e) => setSelectedService(e.target.value)}
+                  >
                     <option value="">Select a service...</option>
                     {serviceDropdownOptions.map((opt, i) => (
                       <option key={i} value={opt}>{opt}</option>

@@ -1,6 +1,6 @@
 # JusLawns — Website
 
-Revenue-first static website for **JusLawns**, built with React + Vite for GitHub Pages. The current build is a **hybrid 4-page funnel** designed to get visitors to pricing, service coverage, and quote actions faster than the original long-scroll homepage.
+Revenue-first website for **JusLawns**, built with React + Vite for GitHub Pages. The site includes a **multi-page funnel** with online booking, smart quote routing, and a calendar-based scheduling system.
 
 ## Tech Stack
 
@@ -11,6 +11,7 @@ Revenue-first static website for **JusLawns**, built with React + Vite for GitHu
 | Fonts | Google Fonts — Playfair Display + DM Sans |
 | Routing | `react-router-dom` with `HashRouter` for GitHub Pages compatibility |
 | Maps | `leaflet` + `react-leaflet` with OpenStreetMap tiles |
+| Calendar | `react-calendar` for date selection in booking flow |
 | Forms | Formspree-ready forms with mailto fallback |
 | Icons | `react-icons` |
 | Hosting | GitHub Pages |
@@ -30,8 +31,11 @@ The app is no longer a single landing page. It now uses route-based pages:
 
 - `/` — Home
 - `/services-pricing` — Services and pricing details
+- `/book` — Online booking wizard (5-step flow)
 - `/service-area` — Service area map and neighborhood coverage
 - `/contact-quote` — Contact and quote capture
+- `/terms` — Terms & Conditions (placeholder)
+- `/privacy` — Privacy Policy (placeholder)
 
 Because the site deploys to GitHub Pages, routing uses `HashRouter` so deep links work without server rewrites.
 
@@ -83,7 +87,7 @@ The site was restructured to reduce friction and move buying information closer 
 
 ## Architecture Notes
 
-- `App.jsx` owns the global `modalOpen` state for the quote modal
+- `App.jsx` owns the global modal state (supports pre-selected service for smart routing)
 - `Navbar` and `Footer` are global and render on every route
 - Page-level composition happens inside `src/pages/`
 - Content stays centralized in `src/data/siteData.js`
@@ -107,6 +111,23 @@ These coordinates are **approximate neighborhood center points**, not customer p
 
 If you later switch to a custom domain and a server that supports SPA rewrites, you can move from `HashRouter` to `BrowserRouter`.
 
+## Future Features (TODO)
+
+Search for `TODO:` comments in the codebase. Planned features include:
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Payment processor (Square/Stripe) | Scaffolded | Placeholder in booking Step 4 |
+| Google Calendar integration | Scaffolded | Event format defined in BookService.jsx |
+| Slot persistence backend | Scaffolded | Local state only; needs Firebase/Supabase |
+| Email confirmations | Planned | Trigger on booking confirmed |
+| Zip-code-to-day routing | Planned | Restrict booking days by customer zip |
+| Returning customer re-booking | Planned | May require account system in v2 |
+| NFC tap-to-review bands | Planned | Separate integration, not part of website |
+| Mobile upsell technician flow | Planned | Tablet/mobile on-site payment view |
+| Terms & Conditions content | Placeholder page | Content to be provided by owner |
+| Privacy Policy content | Placeholder page | Content to be provided by owner |
+
 ## Placeholder Items To Replace
 
 Search for `REPLACE:` comments in the codebase. Current live placeholders include:
@@ -115,9 +136,7 @@ Search for `REPLACE:` comments in the codebase. Current live placeholders includ
 |------|-------|-------|
 | Hero background photo | `src/components/Hero.jsx` | Replace the Unsplash image with a real lawn photo |
 | About photo | `src/components/About.jsx` | Add a team or property photo |
-| Formspree form ID | `src/components/Contact.jsx`, `src/components/QuoteModal.jsx` | Replace `YOUR_FORM_ID` |
 | Social profile links | `src/components/Footer.jsx` | Replace `#` hrefs |
-| Logo image | `src/components/Navbar.jsx`, `src/components/Footer.jsx` | Add logo asset if provided |
 
 ## Design Tokens
 

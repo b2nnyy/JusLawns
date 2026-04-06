@@ -77,22 +77,23 @@ export const services = [
 ];
 
 export const recurringPricing = [
-  { label: "Small Rowhome (<2,000 sq ft)", price: "$40 weekly / $55 biweekly" },
-  { label: "Standard City Yard (2,000–4,000 sq ft)", price: "$50 weekly / $70 biweekly" },
-  { label: "Medium Yard (4,000–8,000 sq ft)", price: "$60 weekly / $85 biweekly" },
-  { label: "Large Yard (8,000–12,000 sq ft)", price: "$75 weekly / $95 biweekly" },
+  { label: "Small Yard", price: "$40 weekly / $55 biweekly" },
+  { label: "Standard Yard", price: "$50 weekly / $70 biweekly" },
+  { label: "Medium Yard", price: "$60 weekly / $85 biweekly" },
+  { label: "Large Yard", price: "$75 weekly / $95 biweekly" },
   { label: "Extra-Large Yard", price: "Custom Quote" },
 ];
 
 export const oneTimePricing = [
-  { label: "One-Time Lawn Cut", price: "$65–$140" },
-  { label: "Overgrown Lawn Recovery", price: "$95–$180" },
-  { label: "Hedge Trimming", price: "$50–$140" },
-  { label: "Leaf Cleanup", price: "$150–$400" },
-  { label: "Flower Bed Cleanup", price: "$75–$200" },
-  { label: "Mulch Installation", price: "$140–$450" },
-  { label: "Gutter Cleaning", price: "$100–$200" },
-  { label: "Walkway/Driveway Pressure Washing", price: "$150–$375" },
+  { label: "One-Time Lawn Cut", price: "$45 and up" },
+  { label: "Overgrown Lawn Recovery", price: "$95 and up" },
+  { label: "Hedge Trimming", price: "$50 and up" },
+  { label: "Leaf Cleanup", price: "Get Estimate" },
+  { label: "Flower Bed Cleanup", price: "Get Estimate" },
+  { label: "Mulch Installation", price: "Get Estimate" },
+  { label: "Gutter Cleaning", price: "Get Estimate" },
+  { label: "Walkway/Driveway Pressure Washing", price: "Get Estimate" },
+  { label: "Soft Wash (House Exterior)", price: "Get Estimate" },
 ];
 
 export const binPricing = [
@@ -212,11 +213,14 @@ export const whyUs = [
 export const serviceDropdownOptions = [
   "Recurring Lawn Mowing",
   "One-Time Lawn Cut",
+  "Overgrown Lawn Recovery",
   "Hedge Trimming",
-  "Mulching",
-  "Seasonal Cleanup",
+  "Leaf Cleanup",
+  "Flower Bed Cleanup",
+  "Mulch Installation",
   "Gutter Cleaning",
-  "Power Washing",
+  "Power Washing / Pressure Washing",
+  "Soft Wash (House Exterior)",
   "Trash Bin Sanitation",
   "Monthly Care Plan",
   "Other / Not Sure",

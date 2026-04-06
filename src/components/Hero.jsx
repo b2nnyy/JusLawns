@@ -1,4 +1,5 @@
-import { FiPhone } from 'react-icons/fi';
+import { FiPhone, FiCalendar } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
 import { businessInfo } from '../data/siteData';
 
 export default function Hero({ openModal }) {
@@ -28,7 +29,10 @@ export default function Hero({ openModal }) {
         </p>
 
         <div className="hero__buttons">
-          <button className="btn btn-gold" onClick={openModal}>
+          <Link to="/book" className="btn btn-gold">
+            <FiCalendar size={16} /> Book Now
+          </Link>
+          <button className="btn btn-outline" onClick={openModal}>
             Get My Free Quote
           </button>
           <a href={`tel:${businessInfo.phone}`} className="btn btn-outline">

@@ -1,10 +1,19 @@
 import { useState } from 'react';
 import { recurringPricing, oneTimePricing, binPricing, plans } from '../data/siteData';
-import { FiCheck, FiUsers } from 'react-icons/fi';
+import { FiCheck, FiUsers, FiArrowRight } from 'react-icons/fi';
 
 const tabs = ['Recurring Mowing', 'One-Time Services', 'Monthly Plans', 'Trash Bin Sanitation'];
 
-function PriceTable({ rows }) {
+const labelToDropdown = {
+  'Leaf Cleanup': 'Leaf Cleanup',
+  'Flower Bed Cleanup': 'Flower Bed Cleanup',
+  'Mulch Installation': 'Mulch Installation',
+  'Gutter Cleaning': 'Gutter Cleaning',
+  'Walkway/Driveway Pressure Washing': 'Power Washing / Pressure Washing',
+  'Soft Wash (House Exterior)': 'Soft Wash (House Exterior)',
+};
+
+function PriceTable({ rows, openModal }) {
   return (
     <div className="pricing__table-wrap">
       <table className="pricing__table">
@@ -12,12 +21,26 @@ function PriceTable({ rows }) {
           <tr><th>Service</th><th>Price</th></tr>
         </thead>
         <tbody>
-          {rows.map((row, i) => (
-            <tr key={i}>
-              <td>{row.label}</td>
-              <td className="pricing__table-price">{row.price}</td>
-            </tr>
-          ))}
+          {rows.map((row, i) => {
+            const isEstimate = row.price === 'Get Estimate';
+            return (
+              <tr key={i} className={isEstimate ? 'pricing__table-row--estimate' : ''}>
+                <td>{row.label}</td>
+                <td className="pricing__table-price">
+                  {isEstimate ? (
+                    <button
+                      className="pricing__estimate-btn"
+                      onClick={() => openModal(labelToDropdown[row.label] || row.label)}
+                    >
+                      Get Estimate <FiArrowRight size={14} />
+                    </button>
+                  ) : (
+                    row.price
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
@@ -83,10 +106,10 @@ export default function Pricing({ openModal }) {
         </div>
 
         <div className="pricing__panel">
-          {activeTab === 0 && <PriceTable rows={recurringPricing} />}
-          {activeTab === 1 && <PriceTable rows={oneTimePricing} />}
+          {activeTab === 0 && <PriceTable rows={recurringPricing} openModal={openModal} />}
+          {activeTab === 1 && <PriceTable rows={oneTimePricing} openModal={openModal} />}
           {activeTab === 2 && <PlanCards openModal={openModal} />}
-          {activeTab === 3 && <PriceTable rows={binPricing} />}
+          {activeTab === 3 && <PriceTable rows={binPricing} openModal={openModal} />}
         </div>
 
         <div className="pricing__discount">
@@ -184,6 +207,31 @@ export default function Pricing({ openModal }) {
           font-family: var(--font-display);
           font-weight: 700;
           color: var(--gold-light);
+        }
+
+        /* Get Estimate button */
+        .pricing__table-row--estimate {
+          cursor: pointer;
+        }
+        .pricing__estimate-btn {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: none;
+          border: 1px solid var(--gold);
+          color: var(--gold-light);
+          font-family: var(--font-body);
+          font-size: 0.85rem;
+          font-weight: 600;
+          padding: 6px 16px;
+          border-radius: var(--radius);
+          cursor: pointer;
+          transition: all 0.2s;
+          white-space: nowrap;
+        }
+        .pricing__estimate-btn:hover {
+          background: var(--gold);
+          color: var(--green-dark);
         }
 
         /* Plan Cards */
