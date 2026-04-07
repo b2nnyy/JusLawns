@@ -4,7 +4,35 @@
   background: var(--cream);
 }
 
-/* Wizard section when it appears below PageIntro + pricing (not top of viewport) */
+/* Read-only service catalog */
+.book-catalog {
+  background: var(--warm-white);
+}
+
+.book-catalog__heading {
+  font-size: 1.6rem;
+  margin-bottom: 8px;
+  color: var(--charcoal);
+}
+
+.book-catalog__sub {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin-bottom: 36px;
+}
+
+.book__service-card--static {
+  cursor: default;
+}
+
+.book__service-card--static:hover {
+  border-color: var(--sand);
+  box-shadow: none;
+  transform: none;
+}
+
+/* Wizard section below the catalog */
 .book--below-fold {
   padding-top: 48px;
   min-height: 0;

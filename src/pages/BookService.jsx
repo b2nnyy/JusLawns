@@ -8,10 +8,6 @@ import {
 } from 'react-icons/fi';
 import { LuSprout, LuTreeDeciduous } from 'react-icons/lu';
 import PageIntro from '../components/PageIntro';
-import Pricing from '../components/Pricing';
-import Services from '../components/Services';
-import WhyUs from '../components/WhyUs';
-import FAQ from '../components/FAQ';
 import './BookService.css';
 
 // TODO: Future — restrict available booking days based on customer zip code
@@ -184,22 +180,41 @@ export default function BookService({ openModal }) {
   return (
     <>
       <PageIntro
-        label="Services, pricing & booking"
-        title="Everything in one place — see pricing, then book"
-        description="Compare our rates and service list, then scroll down to pick a service, choose a date, and send your request. We follow up with your quote and scheduling — nothing is paid on this site."
+        label="Services & Booking"
+        title="Our Full Service Menu"
+        description="Browse everything we offer with transparent pricing, then scroll down to schedule a visit. We'll follow up with your quote — nothing is paid on this site."
         primaryLabel="Get My Free Quote"
         onPrimaryAction={() => openModal?.()}
         secondaryLabel="View Service Area"
         secondaryTo="/service-area"
       />
-      <Pricing openModal={openModal} />
-      <Services />
-      <WhyUs />
-      <FAQ />
+
+      {/* Read-only service catalog */}
+      <section className="book-catalog section-padding">
+        <div className="container">
+          <h2 className="book-catalog__heading">All Services</h2>
+          <p className="book-catalog__sub">
+            Pricing shown is a starting guide. We provide a free estimate for every property.
+          </p>
+          <div className="book__service-grid">
+            {BOOKABLE_SERVICES.map((svc) => {
+              const Icon = svc.icon;
+              return (
+                <div key={svc.id} className="book__service-card book__service-card--static">
+                  <Icon size={28} />
+                  <strong>{svc.label}</strong>
+                  <span className="book__service-desc">{svc.desc}</span>
+                  <span className="book__service-price">{svc.price}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       <section id="book-wizard" className="book section-padding book--below-fold">
         <div className="container book__container">
-          <p className="book__section-kicker">Book online</p>
+          <p className="book__section-kicker">Ready to schedule?</p>
           <h1 className="book__title">Book a Service</h1>
         <StepIndicator current={step} steps={steps} />
 

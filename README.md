@@ -45,7 +45,7 @@ The app is no longer a single landing page. It now uses route-based pages:
 
 - `/` — Home
 - `/services-pricing` — Redirects to `/book` (services, pricing badges, and booking in one flow)
-- `/book` — Single page: pricing tables, home-style service cards, trust/FAQ, then the booking wizard (4 steps). No payment on the site; data posts to Google Apps Script (Sheet + Calendar per your script).
+- `/book` — Read-only service catalog (all services with price badges), then the booking wizard (4 steps). No payment on the site; data posts to Google Apps Script (Sheet + Calendar).
 - `/service-area` — Service area map and neighborhood coverage
 - `/contact-quote` — Contact and quote capture
 - `/terms` — Terms & Conditions
