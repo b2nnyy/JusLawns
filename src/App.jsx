@@ -41,7 +41,7 @@ function App() {
               path="/contact-quote"
               element={<ContactQuote openModal={openModal} />}
             />
-            <Route path="/book" element={<BookService />} />
+            <Route path="/book" element={<BookService openModal={openModal} />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
           </Routes>

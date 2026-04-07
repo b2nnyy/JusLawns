@@ -9,7 +9,7 @@ const serviceLinks = [
 
 const companyLinks = [
   { label: 'Home', to: '/' },
-  { label: 'Services & Pricing', to: '/book' },
+  { label: 'Services, Pricing & Book', to: '/book' },
   { label: 'Service Area', to: '/service-area' },
   { label: 'Contact / Quote', to: '/contact-quote' },
 ];

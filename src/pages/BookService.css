@@ -4,6 +4,23 @@
   background: var(--cream);
 }
 
+/* Wizard section when it appears below PageIntro + pricing (not top of viewport) */
+.book--below-fold {
+  padding-top: 48px;
+  min-height: 0;
+  scroll-margin-top: calc(var(--nav-height) + 12px);
+}
+
+.book__section-kicker {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green-accent);
+  margin-bottom: 8px;
+}
+
 .book__container {
   max-width: 960px;
 }

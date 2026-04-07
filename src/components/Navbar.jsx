@@ -6,8 +6,7 @@ import logoImg from '/juslawns-logo-white.png?url';
 
 const navLinks = [
   { label: 'Home', to: '/' },
-  { label: 'Services & Pricing', to: '/book' },
-  { label: 'Book a Service', to: '/book' },
+  { label: 'Services, Pricing & Book', to: '/book' },
   { label: 'Service Area', to: '/service-area' },
   { label: 'Contact / Quote', to: '/contact-quote' },
 ];

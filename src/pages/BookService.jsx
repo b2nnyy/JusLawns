@@ -7,6 +7,11 @@ import {
   FiLayers, FiWind, FiHome, FiDroplet, FiTrash2, FiScissors,
 } from 'react-icons/fi';
 import { LuSprout, LuTreeDeciduous } from 'react-icons/lu';
+import PageIntro from '../components/PageIntro';
+import Pricing from '../components/Pricing';
+import Services from '../components/Services';
+import WhyUs from '../components/WhyUs';
+import FAQ from '../components/FAQ';
 import './BookService.css';
 
 // TODO: Future — restrict available booking days based on customer zip code
@@ -52,7 +57,7 @@ function StepIndicator({ current, steps }) {
   );
 }
 
-export default function BookService() {
+export default function BookService({ openModal }) {
   const [step, setStep] = useState(0);
   const [service, setService] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
@@ -177,9 +182,25 @@ export default function BookService() {
   };
 
   return (
-    <section className="book section-padding">
-      <div className="container book__container">
-        <h1 className="book__title">Book a Service</h1>
+    <>
+      <PageIntro
+        label="Services, pricing & booking"
+        title="Everything in one place — see pricing, then book"
+        description="Compare our rates and service list, then scroll down to pick a service, choose a date, and send your request. We follow up with your quote and scheduling — nothing is paid on this site."
+        primaryLabel="Get My Free Quote"
+        onPrimaryAction={() => openModal?.()}
+        secondaryLabel="View Service Area"
+        secondaryTo="/service-area"
+      />
+      <Pricing openModal={openModal} />
+      <Services />
+      <WhyUs />
+      <FAQ />
+
+      <section id="book-wizard" className="book section-padding book--below-fold">
+        <div className="container book__container">
+          <p className="book__section-kicker">Book online</p>
+          <h1 className="book__title">Book a Service</h1>
         <StepIndicator current={step} steps={steps} />
 
         <div className="book__panel">
@@ -352,7 +373,8 @@ export default function BookService() {
             </button>
           </div>
         )}
-      </div>
-    </section>
+        </div>
+      </section>
+    </>
   );
 }
