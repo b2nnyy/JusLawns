@@ -55,13 +55,8 @@ function PlanCards({ openModal }) {
           <div key={i} className={`pricing__plan${plan.featured ? ' pricing__plan--featured' : ''}`}>
             {plan.badge && <span className="pricing__plan-badge">{plan.badge}</span>}
             <h3>{plan.name}</h3>
-            <div className="pricing__plan-price">
-              <span className="pricing__plan-label">Starting at</span>
-              <span className="pricing__plan-amount">{plan.price}</span>
-              <span className="pricing__plan-suffix">/month</span>
-            </div>
-            <p className="pricing__plan-note">
-              Final monthly pricing varies by property size and service needs.
+            <p className="pricing__plan-estimate-note">
+              Pricing determined by free estimate based on your property&apos;s size and needs.
             </p>
             <ul>
               {plan.features.map((feat, j) => (
@@ -269,35 +264,9 @@ export default function Pricing({ openModal }) {
         .pricing__plan h3 {
           color: #fff;
           font-size: 1.2rem;
-          margin-bottom: 8px;
+          margin-bottom: 12px;
         }
-        .pricing__plan-price {
-          display: flex;
-          flex-wrap: wrap;
-          align-items: baseline;
-          gap: 6px;
-          margin-bottom: 24px;
-        }
-        .pricing__plan-label {
-          display: block;
-          width: 100%;
-          font-size: 0.78rem;
-          font-weight: 600;
-          letter-spacing: 1.6px;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.45);
-        }
-        .pricing__plan-amount {
-          font-family: var(--font-display);
-          font-size: 2.2rem;
-          font-weight: 900;
-          color: #fff;
-        }
-        .pricing__plan-suffix {
-          font-size: 1rem;
-          color: rgba(255, 255, 255, 0.5);
-        }
-        .pricing__plan-note {
+        .pricing__plan-estimate-note {
           margin-bottom: 20px;
           font-size: 0.8rem;
           line-height: 1.6;

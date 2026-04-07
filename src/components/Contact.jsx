@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiPhone, FiMail, FiMapPin, FiClock, FiCheckCircle } from 'react-icons/fi';
+import { FiPhone, FiMail, FiMapPin, FiHome, FiClock, FiCheckCircle } from 'react-icons/fi';
 import { businessInfo, serviceDropdownOptions } from '../data/siteData';
 
 export default function Contact() {
@@ -37,7 +37,8 @@ export default function Contact() {
   const contactItems = [
     { icon: <FiPhone size={20} />, label: businessInfo.phone, href: `tel:${businessInfo.phone}` },
     { icon: <FiMail size={20} />, label: businessInfo.email, href: `mailto:${businessInfo.email}` },
-    { icon: <FiMapPin size={20} />, label: 'Philadelphia, PA & Surrounding Neighborhoods', href: null },
+    { icon: <FiMapPin size={20} />, label: businessInfo.serviceArea, href: null },
+    { icon: <FiHome size={20} />, label: `${businessInfo.legalName} · ${businessInfo.addressFull}`, href: null },
     { icon: <FiClock size={20} />, label: `${businessInfo.hours} · ${businessInfo.sundayHours}`, href: null },
   ];
 

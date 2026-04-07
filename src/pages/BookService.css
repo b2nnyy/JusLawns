@@ -5,7 +5,7 @@
 }
 
 .book__container {
-  max-width: 760px;
+  max-width: 960px;
 }
 
 .book__title {
@@ -106,7 +106,7 @@
 /* Service Selection */
 .book__service-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 16px;
   margin-bottom: 20px;
 }
@@ -146,10 +146,22 @@
   color: var(--charcoal);
 }
 
-.book__service-card span {
+.book__service-card .book__service-desc {
   font-size: 0.82rem;
   color: var(--text-muted);
   line-height: 1.5;
+}
+
+.book__service-card .book__service-price {
+  display: inline-block;
+  margin-top: 4px;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--green-accent);
+  background: rgba(74, 140, 82, 0.1);
+  padding: 4px 12px;
+  border-radius: var(--radius);
 }
 
 .book__other-note {
@@ -275,54 +287,6 @@
   text-decoration: underline;
 }
 
-/* Payment Options */
-.book__payment-options {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-}
-
-.book__payment-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
-  padding: 28px 20px;
-  border: 2px solid var(--sand);
-  border-radius: var(--radius-lg);
-  background: var(--warm-white);
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: var(--font-body);
-  color: var(--text-body);
-}
-
-.book__payment-card:hover {
-  border-color: var(--green-accent);
-  box-shadow: var(--shadow);
-}
-
-.book__payment-card--selected {
-  border-color: var(--green-accent);
-  background: rgba(74, 140, 82, 0.06);
-}
-
-.book__payment-card svg {
-  color: var(--green-accent);
-}
-
-.book__payment-card strong {
-  font-size: 1rem;
-  color: var(--charcoal);
-}
-
-.book__payment-card span {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-}
-
 /* Navigation */
 .book__nav {
   display: flex;
@@ -358,7 +322,16 @@
 .book__confirm-id {
   font-size: 0.95rem;
   color: var(--text-muted);
-  margin-bottom: 28px;
+  margin-bottom: 12px;
+}
+
+.book__confirm-lead {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  text-align: left;
+  max-width: 520px;
+  margin: 0 auto 24px;
 }
 
 .book__confirm-summary {
@@ -391,68 +364,6 @@
   text-align: right;
 }
 
-.book__confirm-cash-note {
-  font-size: 0.85rem;
-  color: #c0392b;
-  background: #fdecea;
-  padding: 14px 18px;
-  border-radius: var(--radius);
-  margin-bottom: 24px;
-  line-height: 1.6;
-}
-
-/* Cash Disclaimer Modal */
-.book__modal-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.book__modal {
-  background: #fff;
-  border-radius: var(--radius-lg);
-  padding: 36px 32px;
-  max-width: 480px;
-  width: 100%;
-  text-align: center;
-  position: relative;
-}
-
-.book__modal-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted);
-}
-
-.book__modal h3 {
-  margin: 16px 0 12px;
-  color: var(--charcoal);
-}
-
-.book__modal p {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  line-height: 1.7;
-  margin-bottom: 24px;
-}
-
-.book__modal-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
 /* Error message */
 .book__error {
   margin-top: 16px;
@@ -480,8 +391,7 @@
     padding: 28px 20px;
   }
 
-  .book__service-grid,
-  .book__payment-options {
+  .book__service-grid {
     grid-template-columns: 1fr;
   }
 

@@ -1,8 +1,8 @@
-import { FiCheck, FiLock, FiCalendar, FiStar, FiPhone } from 'react-icons/fi';
+import { FiCheck, FiDollarSign, FiCalendar, FiStar, FiPhone } from 'react-icons/fi';
 
 const items = [
   { icon: FiCheck, text: 'Free Estimates Always' },
-  { icon: FiLock, text: 'Secure Online Payments' },
+  { icon: FiDollarSign, text: 'Pay how you prefer — we coordinate offline' },
   { icon: FiCalendar, text: 'Weekly & Biweekly Plans' },
   { icon: FiStar, text: 'Consistent, Reliable Service' },
   { icon: FiPhone, text: 'Mon–Sat, 8AM–6PM' },

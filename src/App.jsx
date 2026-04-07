@@ -32,10 +32,7 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Home openModal={openModal} />} />
-            <Route
-              path="/services-pricing"
-              element={<ServicesPricing openModal={openModal} />}
-            />
+            <Route path="/services-pricing" element={<ServicesPricing />} />
             <Route
               path="/service-area"
               element={<ServiceAreaPage openModal={openModal} />}

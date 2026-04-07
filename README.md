@@ -25,17 +25,31 @@ npm run build
 npm run preview
 ```
 
+### Run inside Cursor / VS Code (Dev Container)
+
+If your machine doesn’t have Node installed—or you want a consistent environment—use the included Dev Container:
+
+1. Install Docker Desktop and the **Dev Containers** extension in Cursor/VS Code.
+2. Command Palette → **Dev Containers: Reopen in Container** (open the `JusLawns` folder first).
+3. After the container builds and `npm install` finishes, in the integrated terminal run:
+   ```bash
+   npm run dev
+   ```
+4. Open the forwarded URL (port **5173**), e.g. `http://localhost:5173/#/`.
+
+The repo includes [`.nvmrc`](.nvmrc) (Node 22) if you use **nvm** / **fnm** on the host instead.
+
 ## Current Site Structure
 
 The app is no longer a single landing page. It now uses route-based pages:
 
 - `/` — Home
-- `/services-pricing` — Services and pricing details
-- `/book` — Online booking wizard (5-step flow)
+- `/services-pricing` — Redirects to `/book` (services, pricing badges, and booking in one flow)
+- `/book` — Schedule / quote request (4 steps: service, date, contact info, confirmation). No payment on the site; data posts to Google Apps Script (Sheet + Calendar per your script).
 - `/service-area` — Service area map and neighborhood coverage
 - `/contact-quote` — Contact and quote capture
-- `/terms` — Terms & Conditions (placeholder)
-- `/privacy` — Privacy Policy (placeholder)
+- `/terms` — Terms & Conditions
+- `/privacy` — Privacy Policy
 
 Because the site deploys to GitHub Pages, routing uses `HashRouter` so deep links work without server rewrites.
 
@@ -93,6 +107,17 @@ The site was restructured to reduce friction and move buying information closer 
 - Content stays centralized in `src/data/siteData.js`
 - The service-area page uses a real Leaflet map with approximate neighborhood-center pins
 
+## Booking backend (Google Apps Script)
+
+Bookings are submitted from [`src/pages/BookService.jsx`](src/pages/BookService.jsx) to a deployed **Google Apps Script** web app (`APPS_SCRIPT_URL`). The script is **not** stored in this repository.
+
+After a booking row is appended successfully, add client confirmation email in the script’s `doPost` handler using `GmailApp.sendEmail()` (see the sample in your internal `cursor-prompt.md` or deployment notes). Requirements:
+
+- Run the script as a Google account that can send as **info@juslawns.com** (Gmail “Send mail as” alias or primary inbox).
+- First-time runs will prompt for Gmail authorization.
+
+No frontend change is required for email; the payload already includes `email`, `firstName`, `service`, and `date`.
+
 ## Service Area Map
 
 The map uses OpenStreetMap tiles via Leaflet. Pin data lives in `src/data/siteData.js` as structured objects with:
@@ -117,16 +142,16 @@ Search for `TODO:` comments in the codebase. Planned features include:
 
 | Feature | Status | Notes |
 |---------|--------|-------|
-| Payment processor (Square/Stripe) | Scaffolded | Placeholder in booking Step 4 |
+| Payment processor (Square/Stripe) | Not on website | Payment arranged with customer offline (cash, card, etc.) |
 | Google Calendar integration | Scaffolded | Event format defined in BookService.jsx |
 | Slot persistence backend | Scaffolded | Local state only; needs Firebase/Supabase |
-| Email confirmations | Planned | Trigger on booking confirmed |
+| Email confirmations | Apps Script | Add `GmailApp.sendEmail` in deployed script after row append |
 | Zip-code-to-day routing | Planned | Restrict booking days by customer zip |
 | Returning customer re-booking | Planned | May require account system in v2 |
 | NFC tap-to-review bands | Planned | Separate integration, not part of website |
 | Mobile upsell technician flow | Planned | Tablet/mobile on-site payment view |
-| Terms & Conditions content | Placeholder page | Content to be provided by owner |
-| Privacy Policy content | Placeholder page | Content to be provided by owner |
+| Terms & Conditions content | Live | `src/pages/Terms.jsx` |
+| Privacy Policy content | Live | `src/pages/Privacy.jsx` |
 
 ## Placeholder Items To Replace
 

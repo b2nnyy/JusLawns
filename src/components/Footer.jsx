@@ -9,7 +9,7 @@ const serviceLinks = [
 
 const companyLinks = [
   { label: 'Home', to: '/' },
-  { label: 'Services & Pricing', to: '/services-pricing' },
+  { label: 'Services & Pricing', to: '/book' },
   { label: 'Service Area', to: '/service-area' },
   { label: 'Contact / Quote', to: '/contact-quote' },
 ];
@@ -36,7 +36,7 @@ export default function Footer() {
           <h4>Services</h4>
           <ul>
             {serviceLinks.map((s, i) => (
-              <li key={i}><Link to="/services-pricing">{s}</Link></li>
+              <li key={i}><Link to="/book">{s}</Link></li>
             ))}
           </ul>
         </div>
@@ -63,6 +63,8 @@ export default function Footer() {
                 <FiMail size={14} /> {businessInfo.email}
               </a>
             </li>
+            <li>{businessInfo.legalName}</li>
+            <li>{businessInfo.addressFull}</li>
             <li>{businessInfo.hours}</li>
             <li>{businessInfo.sundayHours}</li>
           </ul>

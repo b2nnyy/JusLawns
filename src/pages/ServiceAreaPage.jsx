@@ -12,7 +12,7 @@ export default function ServiceAreaPage({ openModal }) {
         primaryLabel="Check My Property"
         onPrimaryAction={openModal}
         secondaryLabel="See Pricing"
-        secondaryTo="/services-pricing"
+        secondaryTo="/book"
       />
       <ServiceArea openModal={openModal} />
       <CTA openModal={openModal} />

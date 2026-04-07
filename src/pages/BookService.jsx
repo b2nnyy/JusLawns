@@ -3,11 +3,10 @@ import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Link } from 'react-router-dom';
 import {
-  FiCheck, FiArrowRight, FiArrowLeft, FiCreditCard, FiDollarSign,
-  FiAlertTriangle, FiX, FiLoader,
+  FiCheck, FiArrowRight, FiArrowLeft, FiLoader,
+  FiLayers, FiWind, FiHome, FiDroplet, FiTrash2, FiScissors,
 } from 'react-icons/fi';
 import { LuSprout, LuTreeDeciduous } from 'react-icons/lu';
-import { FiScissors } from 'react-icons/fi';
 import './BookService.css';
 
 // TODO: Future — restrict available booking days based on customer zip code
@@ -16,10 +15,19 @@ import './BookService.css';
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziCpVn8XV1DB-jZUMeBKNaK2ysZm4d5DnNIw3VsVxGcC5yS9XamEaHKv9CPagzo74Y/exec';
 
 const BOOKABLE_SERVICES = [
-  { id: 'recurring', label: 'Recurring Lawn Mowing', desc: 'Weekly or biweekly mowing, edging, and cleanup', icon: LuSprout },
-  { id: 'one-time', label: 'One-Time Lawn Cut', desc: 'Single visit mow, edge, trim, and blow', icon: LuSprout },
-  { id: 'overgrown', label: 'Overgrown Lawn Recovery', desc: 'Heavy-duty cut for neglected or overgrown yards', icon: LuTreeDeciduous },
-  { id: 'hedge', label: 'Hedge Trimming', desc: 'Shape and trim hedges and shrubs', icon: FiScissors },
+  { id: 'recurring', label: 'Recurring Lawn Mowing', desc: 'Weekly or biweekly mowing, edging, and cleanup', icon: LuSprout, price: 'From $40/visit' },
+  { id: 'one-time', label: 'One-Time Lawn Cut', desc: 'Single visit mow, edge, trim, and blow', icon: LuSprout, price: 'From $45' },
+  { id: 'overgrown', label: 'Overgrown Lawn Recovery', desc: 'Heavy-duty cut for neglected or overgrown yards', icon: LuTreeDeciduous, price: 'From $95' },
+  { id: 'hedge', label: 'Hedge Trimming', desc: 'Shape and trim hedges and shrubs', icon: FiScissors, price: 'From $50' },
+  { id: 'mulching', label: 'Mulch Installation', desc: 'Fresh mulch for plant beds — locks in moisture and polishes landscaping', icon: FiLayers, price: 'Free Estimate' },
+  { id: 'seasonal', label: 'Seasonal Cleanup', desc: 'Spring and fall debris, leaf, and overgrowth removal', icon: FiWind, price: 'Free Estimate' },
+  { id: 'gutters', label: 'Gutter Cleaning', desc: 'Clear clogged gutters to protect your home from water damage', icon: FiHome, price: 'Free Estimate' },
+  { id: 'powerwash', label: 'Power Washing', desc: 'Blast grime and stains from walkways, driveways, and patios', icon: FiDroplet, price: 'Free Estimate' },
+  { id: 'softwash', label: 'Soft Wash (House Exterior)', desc: 'Gentle exterior wash safe for siding, brick, and paint', icon: FiDroplet, price: 'Free Estimate' },
+  { id: 'bin', label: 'Trash Bin Sanitation', desc: 'Full rinse, deodorizing, and bacteria removal for your bins', icon: FiTrash2, price: 'From $25/bin' },
+  { id: 'basic-plan', label: 'Basic Monthly Plan', desc: 'Weekly mowing, edging, trim, and blow — billed by estimate', icon: LuSprout, price: 'By Estimate' },
+  { id: 'standard-plan', label: 'Standard Monthly Plan', desc: 'Mowing, edging, weed control, and priority scheduling', icon: LuSprout, price: 'By Estimate' },
+  { id: 'premium-plan', label: 'Premium Monthly Plan', desc: 'Full-service care: mowing, hedges, seasonal cleanup, and more', icon: LuTreeDeciduous, price: 'By Estimate' },
 ];
 
 function toDateStr(date) {
@@ -44,39 +52,10 @@ function StepIndicator({ current, steps }) {
   );
 }
 
-function CashDisclaimerModal({ onAccept, onCancel }) {
-  return (
-    <div className="book__modal-overlay" onClick={onCancel}>
-      <div className="book__modal" onClick={(e) => e.stopPropagation()}>
-        <button className="book__modal-close" onClick={onCancel} aria-label="Close">
-          <FiX size={20} />
-        </button>
-        <FiAlertTriangle size={40} color="var(--gold)" />
-        <h3>Cash Payment Notice</h3>
-        <p>
-          Cash payment must be collected the day before your scheduled service. A Jus Lawns
-          team member will contact you to coordinate pickup. If payment is not received the
-          day before, your booking will be automatically cancelled.
-        </p>
-        <div className="book__modal-actions">
-          <button className="btn btn-gold" onClick={onAccept}>
-            I Understand
-          </button>
-          <button className="btn btn-outline--dark" onClick={onCancel}>
-            Go Back
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function BookService() {
   const [step, setStep] = useState(0);
   const [service, setService] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState(null);
-  const [showCashModal, setShowCashModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [confirmationId, setConfirmationId] = useState('');
@@ -87,7 +66,7 @@ export default function BookService() {
     termsAccepted: false,
   });
 
-  const steps = ['Service', 'Date', 'Your Info', 'Payment', 'Confirmation'];
+  const steps = ['Service', 'Date', 'Your Info', 'Confirmation'];
 
   const fetchSlots = useCallback(async (date) => {
     const key = toDateStr(date);
@@ -132,7 +111,8 @@ export default function BookService() {
         city: info.city,
         zip: info.zip,
         notes: info.notes,
-        paymentMethod: paymentMethod,
+        /** Not collected on site; team arranges payment (cash, card, etc.) with the customer */
+        paymentMethod: '',
       };
       const res = await fetch(APPS_SCRIPT_URL, {
         method: 'POST',
@@ -144,7 +124,7 @@ export default function BookService() {
         setConfirmationId(data.confirmationId);
         const key = toDateStr(selectedDate);
         setSlotCache((prev) => ({ ...prev, [key]: data.remaining ?? (prev[key] - 1) }));
-        setStep(4);
+        setStep(3);
       } else {
         setSubmitError(data.error || 'Something went wrong. Please try again.');
       }
@@ -158,27 +138,17 @@ export default function BookService() {
     switch (step) {
       case 0: return !!service;
       case 1: return !!selectedDate;
-      case 2: return info.firstName && info.lastName && info.phone && info.email && info.street && info.city && info.zip && info.termsAccepted;
-      case 3: return !!paymentMethod && !submitting;
+      case 2: return info.firstName && info.lastName && info.phone && info.email && info.street && info.city && info.zip && info.termsAccepted && !submitting;
       default: return false;
     }
   };
 
   const handleNext = () => {
-    if (step === 3) {
-      if (paymentMethod === 'cash' && !showCashModal) {
-        setShowCashModal(true);
-        return;
-      }
+    if (step === 2) {
       submitBooking();
       return;
     }
     setStep((s) => s + 1);
-  };
-
-  const handleCashAccept = () => {
-    setShowCashModal(false);
-    submitBooking();
   };
 
   const tileDisabled = ({ date }) => {
@@ -216,19 +186,24 @@ export default function BookService() {
           {step === 0 && (
             <div className="book__services">
               <h2>Select a Service</h2>
-              <p className="book__hint">Choose the service you'd like to book online.</p>
+              <p className="book__hint">
+                Choose the service you&apos;re interested in. Pricing shown is a guide — we&apos;ll confirm your quote
+                and schedule after you submit. Nothing is charged on this website.
+              </p>
               <div className="book__service-grid">
                 {BOOKABLE_SERVICES.map((svc) => {
                   const Icon = svc.icon;
                   return (
                     <button
                       key={svc.id}
+                      type="button"
                       className={`book__service-card ${service?.id === svc.id ? 'book__service-card--selected' : ''}`}
                       onClick={() => setService(svc)}
                     >
                       <Icon size={28} />
                       <strong>{svc.label}</strong>
-                      <span>{svc.desc}</span>
+                      <span className="book__service-desc">{svc.desc}</span>
+                      <span className="book__service-price">{svc.price}</span>
                     </button>
                   );
                 })}
@@ -269,7 +244,9 @@ export default function BookService() {
           {step === 2 && (
             <div className="book__info">
               <h2>Your Information</h2>
-              <p className="book__hint">No account required — just fill in your details.</p>
+              <p className="book__hint">
+                No account required. We&apos;ll use this to send your request to our calendar and sheet and follow up with your quote.
+              </p>
               <div className="book__form">
                 <div className="form-row">
                   <div className="form-group">
@@ -317,53 +294,30 @@ export default function BookService() {
                   </span>
                 </label>
               </div>
-            </div>
-          )}
-
-          {step === 3 && (
-            <div className="book__payment">
-              <h2>Payment Method</h2>
-              <p className="book__hint">Choose how you'd like to pay for your service.</p>
-              <div className="book__payment-options">
-                <button
-                  className={`book__payment-card ${paymentMethod === 'online' ? 'book__payment-card--selected' : ''}`}
-                  onClick={() => setPaymentMethod('online')}
-                >
-                  <FiCreditCard size={28} />
-                  <strong>Pay Online</strong>
-                  {/* TODO: Integrate Square or Stripe payment processing here */}
-                  <span>Credit or debit card — payment integration coming soon</span>
-                </button>
-                <button
-                  className={`book__payment-card ${paymentMethod === 'cash' ? 'book__payment-card--selected' : ''}`}
-                  onClick={() => setPaymentMethod('cash')}
-                >
-                  <FiDollarSign size={28} />
-                  <strong>Pay with Cash</strong>
-                  <span>Cash collected the day before your service</span>
-                </button>
-              </div>
               {submitError && (
                 <p className="book__error">{submitError}</p>
               )}
             </div>
           )}
 
-          {step === 4 && (
+          {step === 3 && (
             <div className="book__confirm">
               <FiCheck size={48} className="book__confirm-icon" />
-              <h2>{paymentMethod === 'cash' ? 'Booking Submitted — Pending Cash Payment' : 'Booking Confirmed!'}</h2>
-              <p className="book__confirm-id">Confirmation: <strong>{confirmationId}</strong></p>
-              {/* TODO: Returning customer re-booking — allow repeat customers to re-book a saved service (may require account system in v2) */}
+              <h2>Request received</h2>
+              <p className="book__confirm-id">Reference: <strong>{confirmationId}</strong></p>
+              <p className="book__confirm-lead">
+                Your details have been saved. Our team will follow up with your quote and to confirm scheduling.
+                Payment is never processed on this site — we&apos;ll go over options (including cash or online) when we connect.
+              </p>
               <div className="book__confirm-summary">
                 <div className="book__confirm-row">
                   <span>Service</span><strong>{service?.label}</strong>
                 </div>
                 <div className="book__confirm-row">
-                  <span>Date</span><strong>{selectedDate?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</strong>
+                  <span>Preferred date</span><strong>{selectedDate?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</strong>
                 </div>
                 <div className="book__confirm-row">
-                  <span>Time</span><strong>Between 7:00 AM &ndash; 5:00 PM</strong>
+                  <span>Time window</span><strong>Between 7:00 AM &ndash; 5:00 PM</strong>
                 </div>
                 <div className="book__confirm-row">
                   <span>Customer</span><strong>{info.firstName} {info.lastName}</strong>
@@ -371,29 +325,21 @@ export default function BookService() {
                 <div className="book__confirm-row">
                   <span>Address</span><strong>{info.street}, {info.city} {info.zip}</strong>
                 </div>
-                <div className="book__confirm-row">
-                  <span>Payment</span><strong>{paymentMethod === 'cash' ? 'Cash (pending collection)' : 'Online (coming soon)'}</strong>
-                </div>
               </div>
-              {paymentMethod === 'cash' && (
-                <p className="book__confirm-cash-note">
-                  A team member will contact you to arrange cash pickup the day before your service.
-                  If payment is not received, your booking will be automatically cancelled.
-                </p>
-              )}
               <Link to="/" className="btn btn-gold">Back to Home</Link>
             </div>
           )}
         </div>
 
-        {step < 4 && (
+        {step < 3 && (
           <div className="book__nav">
             {step > 0 && (
-              <button className="btn btn-outline--dark" onClick={() => setStep((s) => s - 1)}>
+              <button type="button" className="btn btn-outline--dark" onClick={() => setStep((s) => s - 1)}>
                 <FiArrowLeft size={16} /> Back
               </button>
             )}
             <button
+              type="button"
               className="btn btn-gold"
               onClick={handleNext}
               disabled={!canProceed()}
@@ -401,19 +347,12 @@ export default function BookService() {
               {submitting ? (
                 <><FiLoader size={16} className="book__spinner" /> Submitting...</>
               ) : (
-                <>{step === 3 ? 'Confirm Booking' : 'Continue'} <FiArrowRight size={16} /></>
+                <>{step === 2 ? 'Submit request' : 'Continue'} <FiArrowRight size={16} /></>
               )}
             </button>
           </div>
         )}
       </div>
-
-      {showCashModal && (
-        <CashDisclaimerModal
-          onAccept={handleCashAccept}
-          onCancel={() => setShowCashModal(false)}
-        />
-      )}
     </section>
   );
 }

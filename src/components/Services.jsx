@@ -35,7 +35,7 @@ export default function Services() {
                 <span className="services__icon">{Icon && <Icon size={28} />}</span>
                 <h3>{svc.title}</h3>
                 <p>{svc.description}</p>
-                <span className="services__price">{svc.price}</span>
+                {svc.price ? <span className="services__price">{svc.price}</span> : null}
               </div>
             );
           })}

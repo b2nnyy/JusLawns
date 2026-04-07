@@ -12,10 +12,40 @@ export default function ContactQuote({ openModal }) {
         primaryLabel="Open Quick Quote"
         onPrimaryAction={openModal}
         secondaryLabel="See Services & Pricing"
-        secondaryTo="/services-pricing"
+        secondaryTo="/book"
       />
+
+      <div className="contact-lawn-photo">
+        <img
+          src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80"
+          alt="Freshly groomed lawn maintained by Jus Lawns"
+          loading="lazy"
+        />
+      </div>
+
       <Contact />
       <About />
+
+      <style>{`
+        .contact-lawn-photo {
+          width: 100%;
+          max-height: 520px;
+          overflow: hidden;
+          line-height: 0;
+        }
+        .contact-lawn-photo img {
+          width: 100%;
+          height: 520px;
+          object-fit: cover;
+          object-position: center 60%;
+          display: block;
+        }
+        @media (max-width: 640px) {
+          .contact-lawn-photo img {
+            height: 260px;
+          }
+        }
+      `}</style>
     </>
   );
 }
