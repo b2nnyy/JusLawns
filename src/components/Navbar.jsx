@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { FiMenu, FiX, FiPhone } from 'react-icons/fi';
 import { businessInfo } from '../data/siteData';
+import logoImg from '/juslawns-logo-white.png?url';
 
 const navLinks = [
   { label: 'Home', to: '/' },
@@ -41,7 +42,7 @@ export default function Navbar({ openModal }) {
     <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="navbar__inner container">
         <Link to="/" className="navbar__logo">
-          <img src="/juslawns-logo.png" alt="JusLawns" className="navbar__logo-img" />
+          <img src={logoImg} alt="JusLawns" className="navbar__logo-img" />
           Jus<span>Lawns</span>
         </Link>
 
@@ -130,10 +131,8 @@ export default function Navbar({ openModal }) {
           text-decoration: none;
         }
         .navbar__logo-img {
-          height: 42px;
+          height: 46px;
           width: auto;
-          mix-blend-mode: multiply;
-          filter: brightness(0) invert(1);
         }
         .navbar__logo span {
           color: var(--gold);
