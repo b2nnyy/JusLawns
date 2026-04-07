@@ -453,6 +453,27 @@
   flex-wrap: wrap;
 }
 
+/* Error message */
+.book__error {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: #c0392b;
+  background: #fdecea;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  text-align: center;
+}
+
+/* Spinner */
+.book__spinner {
+  animation: bookSpin 1s linear infinite;
+}
+
+@keyframes bookSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .book__panel {

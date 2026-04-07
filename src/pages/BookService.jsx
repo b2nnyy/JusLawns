@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { Link } from 'react-router-dom';
 import {
   FiCheck, FiArrowRight, FiArrowLeft, FiCreditCard, FiDollarSign,
-  FiAlertTriangle, FiX,
+  FiAlertTriangle, FiX, FiLoader,
 } from 'react-icons/fi';
 import { LuSprout, LuTreeDeciduous } from 'react-icons/lu';
 import { FiScissors } from 'react-icons/fi';
@@ -13,6 +13,8 @@ import './BookService.css';
 // TODO: Future — restrict available booking days based on customer zip code
 // (e.g. Northeast Philly zip codes → Mondays only)
 
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziCpVn8XV1DB-jZUMeBKNaK2ysZm4d5DnNIw3VsVxGcC5yS9XamEaHKv9CPagzo74Y/exec';
+
 const BOOKABLE_SERVICES = [
   { id: 'recurring', label: 'Recurring Lawn Mowing', desc: 'Weekly or biweekly mowing, edging, and cleanup', icon: LuSprout },
   { id: 'one-time', label: 'One-Time Lawn Cut', desc: 'Single visit mow, edge, trim, and blow', icon: LuSprout },
@@ -20,24 +22,11 @@ const BOOKABLE_SERVICES = [
   { id: 'hedge', label: 'Hedge Trimming', desc: 'Shape and trim hedges and shrubs', icon: FiScissors },
 ];
 
-const MAX_SLOTS = 12;
-
-// TODO: Replace local slot tracking with Firebase Firestore or Supabase persistence
-// Schema: collection "slots" → doc per date string → { booked: number }
-function useSlotTracker() {
-  const [bookedSlots, setBookedSlots] = useState({});
-
-  const getRemaining = (date) => {
-    const key = date.toISOString().split('T')[0];
-    return MAX_SLOTS - (bookedSlots[key] || 0);
-  };
-
-  const bookSlot = (date) => {
-    const key = date.toISOString().split('T')[0];
-    setBookedSlots((prev) => ({ ...prev, [key]: (prev[key] || 0) + 1 }));
-  };
-
-  return { getRemaining, bookSlot };
+function toDateStr(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function StepIndicator({ current, steps }) {
@@ -88,25 +77,90 @@ export default function BookService() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState(null);
   const [showCashModal, setShowCashModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [confirmationId, setConfirmationId] = useState('');
+  const [slotCache, setSlotCache] = useState({});
   const [info, setInfo] = useState({
     firstName: '', lastName: '', phone: '', email: '',
     street: '', city: '', zip: '', notes: '',
     termsAccepted: false,
   });
 
-  const { getRemaining, bookSlot } = useSlotTracker();
   const steps = ['Service', 'Date', 'Your Info', 'Payment', 'Confirmation'];
 
-  const confirmationId = useMemo(() => {
-    return `JL-${Date.now().toString(36).toUpperCase()}`;
-  }, [step === 4]);
+  const fetchSlots = useCallback(async (date) => {
+    const key = toDateStr(date);
+    if (slotCache[key] !== undefined) return;
+    try {
+      const res = await fetch(`${APPS_SCRIPT_URL}?date=${key}`);
+      const data = await res.json();
+      setSlotCache((prev) => ({ ...prev, [key]: data.remaining ?? 12 }));
+    } catch {
+      setSlotCache((prev) => ({ ...prev, [key]: 12 }));
+    }
+  }, [slotCache]);
+
+  const getRemaining = (date) => {
+    const key = toDateStr(date);
+    return slotCache[key] ?? 12;
+  };
+
+  useEffect(() => {
+    if (step === 1) {
+      const today = new Date();
+      const promises = [];
+      for (let i = 0; i < 30; i++) {
+        const d = new Date(today);
+        d.setDate(d.getDate() + i);
+        promises.push(fetchSlots(d));
+      }
+    }
+  }, [step]);
+
+  const submitBooking = async () => {
+    setSubmitting(true);
+    setSubmitError('');
+    try {
+      const payload = {
+        date: toDateStr(selectedDate),
+        service: service.label,
+        firstName: info.firstName,
+        lastName: info.lastName,
+        phone: info.phone,
+        email: info.email,
+        street: info.street,
+        city: info.city,
+        zip: info.zip,
+        notes: info.notes,
+        paymentMethod: paymentMethod,
+      };
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setConfirmationId(data.confirmationId);
+        const key = toDateStr(selectedDate);
+        setSlotCache((prev) => ({ ...prev, [key]: data.remaining ?? (prev[key] - 1) }));
+        setStep(4);
+      } else {
+        setSubmitError(data.error || 'Something went wrong. Please try again.');
+      }
+    } catch {
+      setSubmitError('Could not connect to booking system. Please try again.');
+    }
+    setSubmitting(false);
+  };
 
   const canProceed = () => {
     switch (step) {
       case 0: return !!service;
       case 1: return !!selectedDate;
       case 2: return info.firstName && info.lastName && info.phone && info.email && info.street && info.city && info.zip && info.termsAccepted;
-      case 3: return !!paymentMethod;
+      case 3: return !!paymentMethod && !submitting;
       default: return false;
     }
   };
@@ -117,24 +171,15 @@ export default function BookService() {
         setShowCashModal(true);
         return;
       }
-      bookSlot(selectedDate);
-      // TODO: Send booking data to backend (Firebase/Supabase)
-      // TODO: Create Google Calendar event
-      //   - Title: paymentMethod === 'cash'
-      //       ? `[CASH - PENDING] ${info.firstName} ${info.lastName} — ${service.label}`
-      //       : `[PAID] ${info.firstName} ${info.lastName} — ${service.label}`
-      //   - Color: cash = yellow, online = green
-      //   - All-day event on selectedDate
-      //   - Description: address, phone, email, notes, confirmation ID
-      // TODO: Trigger confirmation email to customer
+      submitBooking();
+      return;
     }
     setStep((s) => s + 1);
   };
 
   const handleCashAccept = () => {
     setShowCashModal(false);
-    bookSlot(selectedDate);
-    setStep(4);
+    submitBooking();
   };
 
   const tileDisabled = ({ date }) => {
@@ -144,13 +189,15 @@ export default function BookService() {
   };
 
   const tileContent = ({ date }) => {
-    const remaining = getRemaining(date);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date < today) return null;
+    const remaining = getRemaining(date);
+    const key = toDateStr(date);
+    const loaded = slotCache[key] !== undefined;
     return (
       <span className={`book__slot-count ${remaining <= 3 ? 'book__slot-count--low' : ''}`}>
-        {remaining} left
+        {loaded ? `${remaining} left` : '...'}
       </span>
     );
   };
@@ -297,6 +344,9 @@ export default function BookService() {
                   <span>Cash collected the day before your service</span>
                 </button>
               </div>
+              {submitError && (
+                <p className="book__error">{submitError}</p>
+              )}
             </div>
           )}
 
@@ -305,7 +355,6 @@ export default function BookService() {
               <FiCheck size={48} className="book__confirm-icon" />
               <h2>{paymentMethod === 'cash' ? 'Booking Submitted — Pending Cash Payment' : 'Booking Confirmed!'}</h2>
               <p className="book__confirm-id">Confirmation: <strong>{confirmationId}</strong></p>
-              {/* TODO: Send confirmation email to customer with booking details */}
               {/* TODO: Returning customer re-booking — allow repeat customers to re-book a saved service (may require account system in v2) */}
               <div className="book__confirm-summary">
                 <div className="book__confirm-row">
@@ -350,7 +399,11 @@ export default function BookService() {
               onClick={handleNext}
               disabled={!canProceed()}
             >
-              {step === 3 ? 'Confirm Booking' : 'Continue'} <FiArrowRight size={16} />
+              {submitting ? (
+                <><FiLoader size={16} className="book__spinner" /> Submitting...</>
+              ) : (
+                <>{step === 3 ? 'Confirm Booking' : 'Continue'} <FiArrowRight size={16} /></>
+              )}
             </button>
           </div>
         )}
