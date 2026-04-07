@@ -65,7 +65,7 @@ function CashDisclaimerModal({ onAccept, onCancel }) {
         <FiAlertTriangle size={40} color="var(--gold)" />
         <h3>Cash Payment Notice</h3>
         <p>
-          Cash payment must be collected the day before your scheduled service. A JusLawns
+          Cash payment must be collected the day before your scheduled service. A Jus Lawns
           team member will contact you to coordinate pickup. If payment is not received the
           day before, your booking will be automatically cancelled.
         </p>

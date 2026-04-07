@@ -5,7 +5,7 @@ export default function WhyUs() {
     <section className="why-us section-padding" id="why-us">
       <div className="container">
         <p className="section-label">Why Choose Us</p>
-        <h2>What Sets JusLawns Apart</h2>
+        <h2>What Sets Jus Lawns Apart</h2>
         <p className="why-us__sub">
           We built this business on doing the right thing every visit —
           showing up on time, doing quality work, and making it easy for you.

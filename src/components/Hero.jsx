@@ -16,7 +16,7 @@ export default function Hero({ openModal }) {
           Now Serving Philadelphia &amp; Surrounding Neighborhoods
         </div>
 
-        <p className="hero__eyebrow">JusLawns</p>
+        <p className="hero__eyebrow">Jus Lawns</p>
 
         <h1 className="hero__h1">
           Curb Appeal<br />

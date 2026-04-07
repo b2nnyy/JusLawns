@@ -42,8 +42,8 @@ export default function Navbar({ openModal }) {
     <nav className={`navbar${scrolled ? ' navbar--scrolled' : ''}`}>
       <div className="navbar__inner container">
         <Link to="/" className="navbar__logo">
-          <img src={logoImg} alt="JusLawns" className="navbar__logo-img" />
-          Jus<span>Lawns</span>
+          <img src={logoImg} alt="Jus Lawns" className="navbar__logo-img" />
+          Jus <span>Lawns</span>
         </Link>
 
         <ul className="navbar__links">

@@ -22,7 +22,7 @@ export default function Footer() {
       <div className="container footer__grid">
         <div className="footer__brand">
           <Link to="/" className="footer__logo">
-            Jus<span>Lawns</span>
+            Jus <span>Lawns</span>
           </Link>
           <p className="footer__tagline">{businessInfo.slogan}</p>
           <div className="footer__social">

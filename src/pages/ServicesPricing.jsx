@@ -10,7 +10,7 @@ export default function ServicesPricing({ openModal }) {
       <PageIntro
         label="Services & Pricing"
         title="See What We Offer and What It Costs"
-        description="Everything you need to make a hiring decision quickly: clear pricing, the services we provide, and the reasons homeowners keep choosing JusLawns."
+        description="Everything you need to make a hiring decision quickly: clear pricing, the services we provide, and the reasons homeowners keep choosing Jus Lawns."
         primaryLabel="Get My Free Quote"
         onPrimaryAction={openModal}
         secondaryLabel="View Service Area"
