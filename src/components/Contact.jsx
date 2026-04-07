@@ -97,7 +97,7 @@ export default function Contact() {
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="c-service">Service Needed</label>
-                  <select id="c-service" name="service">
+                  <select id="c-service" name="service" required>
                     <option value="">Select a service...</option>
                     {serviceDropdownOptions.map((opt, i) => (
                       <option key={i} value={opt}>{opt}</option>

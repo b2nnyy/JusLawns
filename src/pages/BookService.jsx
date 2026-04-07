@@ -109,11 +109,10 @@ export default function BookService() {
   useEffect(() => {
     if (step === 1) {
       const today = new Date();
-      const promises = [];
       for (let i = 0; i < 30; i++) {
         const d = new Date(today);
         d.setDate(d.getDate() + i);
-        promises.push(fetchSlots(d));
+        fetchSlots(d);
       }
     }
   }, [step]);
