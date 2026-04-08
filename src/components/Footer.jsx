@@ -63,8 +63,6 @@ export default function Footer() {
                 <FiMail size={14} /> {businessInfo.email}
               </a>
             </li>
-            <li>{businessInfo.legalName}</li>
-            <li>{businessInfo.addressFull}</li>
             <li>{businessInfo.hours}</li>
             <li>{businessInfo.sundayHours}</li>
           </ul>

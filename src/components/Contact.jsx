@@ -1,35 +1,63 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FiPhone, FiMail, FiMapPin, FiHome, FiClock, FiCheckCircle } from 'react-icons/fi';
-import { businessInfo, serviceDropdownOptions } from '../data/siteData';
+import { FiPhone, FiMail, FiMapPin, FiClock, FiCheckCircle } from 'react-icons/fi';
+import { businessInfo, serviceDropdownOptions, appsScriptWebAppUrl } from '../data/siteData';
+
+function splitFullName(full) {
+  const trimmed = (full || '').toString().trim();
+  const parts = trimmed.split(/\s+/).filter(Boolean);
+  const firstName = parts[0] || '';
+  const lastName = parts.slice(1).join(' ') || '';
+  return { firstName, lastName };
+}
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-
-  // REPLACE: Formspree — create account at formspree.io and replace YOUR_FORM_ID
-  const FORMSPREE_ID = 'mzdkvynr';
-  const formspreeReady = FORMSPREE_ID !== 'YOUR_FORM_ID';
+  const [confirmationId, setConfirmationId] = useState('');
+  const [submitError, setSubmitError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setSubmitError('');
 
-    if (formspreeReady) {
-      try {
-        const data = new FormData(e.target);
-        const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
-          method: 'POST',
-          body: data,
-          headers: { Accept: 'application/json' },
-        });
-        if (res.ok) {
-          setSubmitted(true);
-        }
-      } catch {
-        window.location.href = `mailto:${businessInfo.email}?subject=${encodeURIComponent('Website contact')}`;
+    const form = e.target;
+    const fd = new FormData(form);
+    const nameRaw = (fd.get('name') || '').toString();
+    const { firstName, lastName } = splitFullName(nameRaw);
+    const service = (fd.get('service') || '').toString();
+    const address = (fd.get('address') || '').toString();
+    const message = (fd.get('message') || '').toString();
+
+    const payload = {
+      bookingKind: 'contact',
+      firstName,
+      lastName,
+      phone: (fd.get('phone') || '').toString(),
+      email: (fd.get('email') || '').toString(),
+      street: address,
+      city: '',
+      zip: '',
+      service,
+      notes: message,
+      paymentMethod: '',
+    };
+
+    try {
+      const res = await fetch(appsScriptWebAppUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setConfirmationId(data.confirmationId || '');
+        setSubmitted(true);
+        form.reset();
+      } else {
+        setSubmitError(data.error || 'Something went wrong. Please try again.');
       }
-    } else {
+    } catch {
       window.location.href = `mailto:${businessInfo.email}?subject=${encodeURIComponent('Website contact')}`;
     }
     setSubmitting(false);
@@ -39,7 +67,6 @@ export default function Contact() {
     { icon: <FiPhone size={20} />, label: businessInfo.phone, href: `tel:${businessInfo.phone}` },
     { icon: <FiMail size={20} />, label: businessInfo.email, href: `mailto:${businessInfo.email}` },
     { icon: <FiMapPin size={20} />, label: businessInfo.serviceArea, href: null },
-    { icon: <FiHome size={20} />, label: `${businessInfo.legalName} · ${businessInfo.addressFull}`, href: null },
     { icon: <FiClock size={20} />, label: `${businessInfo.hours} · ${businessInfo.sundayHours}`, href: null },
   ];
 
@@ -54,18 +81,6 @@ export default function Contact() {
             Reach out for billing questions, service issues, general inquiries, or anything else on your mind.
             We read every message and respond as soon as we can.
           </p>
-
-          <div className="contact__scheduling">
-            <p className="contact__scheduling-label">Prefer a scheduled time?</p>
-            <div className="contact__scheduling-actions">
-              <Link to="/book" className="btn btn-outline">
-                Book lawn service
-              </Link>
-              <Link to="/book?kind=general" className="btn btn-outline">
-                Request a callback (same calendar, no service yet)
-              </Link>
-            </div>
-          </div>
 
           <div className="contact__items">
             {contactItems.map((item, i) => (
@@ -87,6 +102,9 @@ export default function Contact() {
               <FiCheckCircle size={40} color="var(--green-accent)" />
               <h3>Thank you</h3>
               <p>We received your message and will get back to you shortly.</p>
+              {confirmationId ? (
+                <p className="contact__ref">Reference: <strong>{confirmationId}</strong></p>
+              ) : null}
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -109,25 +127,20 @@ export default function Contact() {
                 <label htmlFor="c-address">Property address (optional)</label>
                 <input type="text" id="c-address" name="address" />
               </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label htmlFor="c-service">Topic or service (optional)</label>
-                  <select id="c-service" name="service" defaultValue="">
-                    <option value="">—</option>
-                    {serviceDropdownOptions.map((opt, i) => (
-                      <option key={i} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label htmlFor="c-date">Preferred date (optional)</label>
-                  <input type="date" id="c-date" name="date" />
-                </div>
+              <div className="form-group">
+                <label htmlFor="c-service">Topic or service (optional)</label>
+                <select id="c-service" name="service" defaultValue="">
+                  <option value="">—</option>
+                  {serviceDropdownOptions.map((opt, i) => (
+                    <option key={i} value={opt}>{opt}</option>
+                  ))}
+                </select>
               </div>
               <div className="form-group">
                 <label htmlFor="c-message">Message</label>
                 <textarea id="c-message" name="message" rows="4" required />
               </div>
+              {submitError ? <p className="contact__error" role="alert">{submitError}</p> : null}
               <button type="submit" className="btn btn-gold contact__submit" disabled={submitting}>
                 {submitting ? 'Sending...' : 'Send message'}
               </button>
@@ -162,24 +175,7 @@ export default function Contact() {
           color: var(--text-muted);
           font-size: 0.95rem;
           line-height: 1.7;
-          margin-bottom: 24px;
-        }
-        .contact__scheduling {
           margin-bottom: 28px;
-          padding: 20px;
-          background: rgba(74, 140, 82, 0.08);
-          border-radius: var(--radius);
-        }
-        .contact__scheduling-label {
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: var(--charcoal);
-          margin: 0 0 12px;
-        }
-        .contact__scheduling-actions {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 12px;
         }
         .contact__items {
           display: flex;
@@ -250,6 +246,15 @@ export default function Contact() {
         .contact__success p {
           color: var(--text-muted);
         }
+        .contact__ref {
+          margin-top: 12px;
+          font-size: 0.9rem;
+        }
+        .contact__error {
+          color: #b42318;
+          font-size: 0.9rem;
+          margin: 0;
+        }
 
         @media (max-width: 900px) {
           .contact__grid {
@@ -260,14 +265,6 @@ export default function Contact() {
         @media (max-width: 640px) {
           .contact__form-card {
             padding: 24px 20px;
-          }
-          .contact__scheduling-actions {
-            flex-direction: column;
-            align-items: stretch;
-          }
-          .contact__scheduling-actions .btn {
-            text-align: center;
-            justify-content: center;
           }
         }
       `}</style>

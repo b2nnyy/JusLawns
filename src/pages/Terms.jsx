@@ -197,6 +197,7 @@ export default function Terms() {
               Questions? Contact {businessInfo.legalName} at{' '}
               <a href={`mailto:${businessInfo.email}`}>{businessInfo.email}</a> or{' '}
               <a href={`tel:${businessInfo.phone}`}>{businessInfo.phone}</a>.
+              Mailing address: {businessInfo.addressFull}.
             </p>
           </article>
         </div>

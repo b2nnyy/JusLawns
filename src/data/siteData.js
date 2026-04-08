@@ -7,7 +7,7 @@ export const businessInfo = {
   email: "info@juslawns.com",
   addressLine1: "502 W 7th Ste 100",
   cityStateZip: "Erie, PA 16502",
-  /** Full mailing address for legal pages and footer */
+  /** Full mailing address for legal pages (Terms, Privacy) */
   addressFull: "502 W 7th Ste 100, Erie, PA 16502",
   serviceArea: "Philadelphia, PA and surrounding neighborhoods",
   hours: "Mon–Sat: 8:00 AM – 6:00 PM",
@@ -16,13 +16,9 @@ export const businessInfo = {
   secondaryCTA: "Book Lawn Service",
 };
 
-/**
- * Free “callback first” flow: `/book?kind=general` posts the same Apps Script URL with bookingKind: 'general'.
- * Calendar title/description helpers should treat this as not a lawn service booking.
- */
-export const generalCallbackBooking = {
-  calendarServiceLabel: 'Callback — questions or concerns (not a service visit)',
-};
+/** Deployed Apps Script web app URL (/exec) — booking + contact form POSTs. */
+export const appsScriptWebAppUrl =
+  'https://script.google.com/macros/s/AKfycbziCpVn8XV1DB-jZUMeBKNaK2ysZm4d5DnNIw3VsVxGcC5yS9XamEaHKv9CPagzo74Y/exec';
 
 export const aboutCopy = {
   paragraphs: [

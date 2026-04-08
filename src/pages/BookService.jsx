@@ -1,24 +1,18 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import {
   FiCheck, FiArrowRight, FiArrowLeft, FiLoader,
   FiLayers, FiWind, FiHome, FiDroplet, FiTrash2, FiScissors,
 } from 'react-icons/fi';
 import { LuSprout, LuTreeDeciduous } from 'react-icons/lu';
 import PageIntro from '../components/PageIntro';
-import { generalCallbackBooking } from '../data/siteData';
+import { appsScriptWebAppUrl } from '../data/siteData';
 import './BookService.css';
 
 // TODO: Future — restrict available booking days based on customer zip code
 // (e.g. Northeast Philly zip codes → Mondays only)
-
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbziCpVn8XV1DB-jZUMeBKNaK2ysZm4d5DnNIw3VsVxGcC5yS9XamEaHKv9CPagzo74Y/exec';
-
-/** Query ?kind=general — same Apps Script + calendar, labeled as callback (not lawn service booking). */
-const GENERAL_KIND_PARAM = 'general';
-const GENERAL_BOOKING_ID = '__general__';
 
 const BOOKABLE_SERVICES = [
   { id: 'recurring', label: 'Recurring Lawn Mowing', desc: 'Weekly or biweekly mowing, edging, and cleanup', icon: LuSprout, price: 'From $40/visit' },
@@ -59,13 +53,8 @@ function StepIndicator({ current, steps }) {
 }
 
 export default function BookService({ openModal }) {
-  const [searchParams] = useSearchParams();
-  const isGeneralSchedule = searchParams.get('kind') === GENERAL_KIND_PARAM;
-
   const [step, setStep] = useState(0);
-  const [selectedIds, setSelectedIds] = useState(
-    () => new Set(isGeneralSchedule ? [GENERAL_BOOKING_ID] : []),
-  );
+  const [selectedIds, setSelectedIds] = useState(new Set());
   const [selectedDate, setSelectedDate] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -77,28 +66,10 @@ export default function BookService({ openModal }) {
     termsAccepted: false,
   });
 
-  const selectedLabels = useMemo(() => {
-    if (isGeneralSchedule && selectedIds.has(GENERAL_BOOKING_ID)) {
-      return [generalCallbackBooking.calendarServiceLabel];
-    }
-    return BOOKABLE_SERVICES.filter((s) => selectedIds.has(s.id)).map((s) => s.label);
-  }, [selectedIds, isGeneralSchedule]);
-
-  useEffect(() => {
-    if (isGeneralSchedule) {
-      setSelectedIds(new Set([GENERAL_BOOKING_ID]));
-    } else {
-      setSelectedIds((prev) => {
-        const next = new Set(prev);
-        next.delete(GENERAL_BOOKING_ID);
-        return next;
-      });
-    }
-    setStep(0);
-    setSelectedDate(null);
-    setConfirmationId('');
-    setSubmitError('');
-  }, [isGeneralSchedule]);
+  const selectedLabels = useMemo(
+    () => BOOKABLE_SERVICES.filter((s) => selectedIds.has(s.id)).map((s) => s.label),
+    [selectedIds],
+  );
 
   const steps = ['Date', 'Your Info', 'Confirmation'];
 
@@ -115,7 +86,7 @@ export default function BookService({ openModal }) {
     const key = toDateStr(date);
     if (slotCache[key] !== undefined) return;
     try {
-      const res = await fetch(`${APPS_SCRIPT_URL}?date=${key}`);
+      const res = await fetch(`${appsScriptWebAppUrl}?date=${key}`);
       const data = await res.json();
       setSlotCache((prev) => ({ ...prev, [key]: data.remaining ?? 12 }));
     } catch {
@@ -155,9 +126,9 @@ export default function BookService({ openModal }) {
         zip: info.zip,
         notes: info.notes,
         paymentMethod: '',
-        bookingKind: isGeneralSchedule ? 'general' : 'service',
+        bookingKind: 'service',
       };
-      const res = await fetch(APPS_SCRIPT_URL, {
+      const res = await fetch(appsScriptWebAppUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload),
@@ -179,16 +150,12 @@ export default function BookService({ openModal }) {
 
   const canProceed = () => {
     switch (step) {
-      case 0: {
-        if (!selectedDate) return false;
-        if (isGeneralSchedule) return selectedIds.has(GENERAL_BOOKING_ID);
-        return selectedIds.size > 0;
-      }
-      case 1: {
-        const base = info.firstName && info.lastName && info.phone && info.email && info.termsAccepted && !submitting;
-        if (isGeneralSchedule) return base;
-        return base && info.street && info.city && info.zip;
-      }
+      case 0: return selectedIds.size > 0 && !!selectedDate;
+      case 1:
+        return Boolean(
+          info.firstName && info.lastName && info.phone && info.email && info.street && info.city && info.zip
+            && info.termsAccepted && !submitting,
+        );
       default: return false;
     }
   };
@@ -237,23 +204,17 @@ export default function BookService({ openModal }) {
   return (
     <>
       <PageIntro
-        label={isGeneralSchedule ? 'Callback scheduling' : 'Services & Booking'}
-        title={isGeneralSchedule ? 'Request a callback first' : 'Our Full Service Menu'}
-        description={
-          isGeneralSchedule
-            ? 'Pick a day that works for you. We will reach out by phone or email — for questions, concerns, or figuring out what you need before any service visit. Uses the same scheduling system as lawn bookings, labeled so our team knows it is not a service job yet.'
-            : "Start below by selecting the work you need—that keeps your request structured and easy for our team to track. Not sure what you need yet, have a special project, or questions first? Use Get a free quote and we'll help you figure it out."
-        }
-        primaryLabel={isGeneralSchedule ? 'Choose a date' : 'Choose my services'}
-        onPrimaryAction={isGeneralSchedule ? scrollToWizard : scrollToCatalog}
+        label="Services & Booking"
+        title="Our Full Service Menu"
+        description="Start below by selecting the work you need—that keeps your request structured and easy for our team to track. Not sure what you need yet, have a special project, or questions first? Use Get a free quote and we'll help you figure it out."
+        primaryLabel="Choose my services"
+        onPrimaryAction={scrollToCatalog}
         optionalLabel="Get a free quote"
         onOptionalAction={() => openModal?.()}
         secondaryLabel="View Service Area"
         secondaryTo="/service-area"
       />
 
-      {/* Interactive service catalog — multi-select (hidden for free callback flow) */}
-      {!isGeneralSchedule && (
       <section id="book-catalog" className="book-catalog section-padding">
         <div className="container">
           <h2 className="book-catalog__heading">Select Your Services</h2>
@@ -302,13 +263,11 @@ export default function BookService({ openModal }) {
           </p>
         </div>
       </section>
-      )}
 
-      {/* Wizard: Date → Info → Confirmation */}
       <section id="book-wizard" className="book section-padding book--below-fold">
         <div className="container book__container">
-          <p className="book__section-kicker">{isGeneralSchedule ? 'Callback request' : 'Ready to schedule?'}</p>
-          <h1 className="book__title">{isGeneralSchedule ? 'Schedule a callback' : 'Book a Service'}</h1>
+          <p className="book__section-kicker">Ready to schedule?</p>
+          <h1 className="book__title">Book a Service</h1>
           <StepIndicator current={step} steps={steps} />
 
           <div className="book__panel">
@@ -316,18 +275,10 @@ export default function BookService({ openModal }) {
               <div className="book__date">
                 <h2>Select a Date</h2>
                 <p className="book__disclaimer">
-                  {isGeneralSchedule ? (
-                    <>
-                      Your <strong>preferred day for a callback</strong> — we will contact you by phone or email, not visit the property on that slot unless we arrange it with you.
-                    </>
-                  ) : (
-                    <>
-                      Your service will be completed anytime between <strong>7:00 AM &ndash; 5:00 PM</strong> on
-                      your selected date. You do not need to be home.
-                    </>
-                  )}
+                  Your service will be completed anytime between <strong>7:00 AM &ndash; 5:00 PM</strong> on
+                  your selected date. You do not need to be home.
                 </p>
-                {!isGeneralSchedule && selectedIds.size === 0 && (
+                {selectedIds.size === 0 && (
                   <p className="book__error">Please select at least one service above before choosing a date.</p>
                 )}
                 <div className="book__calendar-wrap">
@@ -353,9 +304,7 @@ export default function BookService({ openModal }) {
               <div className="book__info">
                 <h2>Your Information</h2>
                 <p className="book__hint">
-                  {isGeneralSchedule
-                    ? 'No account required. We will use this to reach you about your questions or concerns.'
-                    : 'No account required. We&apos;ll use this to send your request to our team and follow up with your quote.'}
+                  No account required. We&apos;ll use this to send your request to our team and follow up with your quote.
                 </p>
                 <div className="book__form">
                   <div className="form-row">
@@ -379,21 +328,21 @@ export default function BookService({ openModal }) {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label>Street Address{isGeneralSchedule ? ' (optional)' : ' *'}</label>
-                    <input type="text" value={info.street} onChange={handleInfoChange('street')} required={!isGeneralSchedule} />
+                    <label>Street Address *</label>
+                    <input type="text" value={info.street} onChange={handleInfoChange('street')} required />
                   </div>
                   <div className="form-row">
                     <div className="form-group">
-                      <label>City{isGeneralSchedule ? ' (optional)' : ' *'}</label>
-                      <input type="text" value={info.city} onChange={handleInfoChange('city')} required={!isGeneralSchedule} />
+                      <label>City *</label>
+                      <input type="text" value={info.city} onChange={handleInfoChange('city')} required />
                     </div>
                     <div className="form-group">
-                      <label>Zip Code{isGeneralSchedule ? ' (optional)' : ' *'}</label>
-                      <input type="text" value={info.zip} onChange={handleInfoChange('zip')} required={!isGeneralSchedule} />
+                      <label>Zip Code *</label>
+                      <input type="text" value={info.zip} onChange={handleInfoChange('zip')} required />
                     </div>
                   </div>
                   <div className="form-group">
-                    <label>{isGeneralSchedule ? 'What should we know? (optional)' : 'Notes / Access Instructions'}</label>
+                    <label>Notes / Access Instructions</label>
                     <textarea value={info.notes} onChange={handleInfoChange('notes')} rows="3" />
                   </div>
                   <label className="book__checkbox">
@@ -416,22 +365,12 @@ export default function BookService({ openModal }) {
                 <h2>Request received</h2>
                 <p className="book__confirm-id">Reference: <strong>{confirmationId}</strong></p>
                 <p className="book__confirm-lead">
-                  {isGeneralSchedule ? (
-                    <>
-                      Your callback request is saved. Our team will reach out on or near your preferred date.
-                      If you still need to book work on the property, you can use{' '}
-                      <Link to="/book">Book lawn service</Link> after we talk.
-                    </>
-                  ) : (
-                    <>
-                      Your details have been saved. Our team will follow up with your quote and to confirm scheduling.
-                      Payment is never processed on this site — we&apos;ll go over options when we connect.
-                    </>
-                  )}
+                  Your details have been saved. Our team will follow up with your quote and to confirm scheduling.
+                  Payment is never processed on this site — we&apos;ll go over options when we connect.
                 </p>
                 <div className="book__confirm-summary">
                   <div className="book__confirm-row book__confirm-row--services">
-                    <span>{isGeneralSchedule ? 'Request type' : 'Services'}</span>
+                    <span>Services</span>
                     <ul className="book__confirm-service-list">
                       {selectedLabels.map((label) => (
                         <li key={label}>{label}</li>
@@ -448,11 +387,7 @@ export default function BookService({ openModal }) {
                     <span>Customer</span><strong>{info.firstName} {info.lastName}</strong>
                   </div>
                   <div className="book__confirm-row">
-                    <span>Address</span>
-                    <strong>
-                      {[info.street, info.city, info.zip].filter(Boolean).join(', ')
-                        || (isGeneralSchedule ? 'Not provided' : '—')}
-                    </strong>
+                    <span>Address</span><strong>{info.street}, {info.city} {info.zip}</strong>
                   </div>
                 </div>
                 <Link to="/" className="btn btn-gold">Back to Home</Link>

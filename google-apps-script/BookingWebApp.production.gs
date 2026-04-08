@@ -1,31 +1,35 @@
 /**
- * JusLawns booking web app — production-style script with service vs general callback.
- * Deploy as Web app; paste into your Apps Script project (bound to the Sheet) and replace
- * your previous doPost/doGet and helpers, or merge carefully if you added custom columns.
- *
- * Sheet row: adds bookingKind as the LAST column (after ISO timestamp). Add a header row
- * cell if you use headers (e.g. "bookingKind").
+ * JusLawns booking web app — production-style script.
+ * bookingKind: "service" (default) | "general" (legacy wizard) | "contact" (contact form; no slot check).
+ * Deploy as Web app; bound to the Sheet.
  */
 
 const CALENDAR_ID = 'primary'; // uses the account's main calendar
 const MAX_SLOTS_PER_DAY = 12;
 const SHEET_NAME = 'Sheet1';
 
-/** Calendar event colors: 10 = green, 7 = peacock */
-const COLOR_SERVICE_BOOKING = '10';
-const COLOR_GENERAL_CALLBACK = '7';
+const COLOR_SERVICE_BOOKING = '10';   // green
+const COLOR_GENERAL_CALLBACK = '7'; // peacock
+const COLOR_CONTACT_FORM = '5';      // banana
 
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
-    const kind = normalizeBookingKind_(data.bookingKind);
+    var data = JSON.parse(e.postData.contents);
+    var kind = normalizeBookingKind_(data.bookingKind);
+    var confirmationId = 'JL-' + new Date().getTime().toString(36).toUpperCase();
 
-    const remaining = getRemainingSlots(data.date);
+    if (kind === 'contact') {
+      var effectiveDate = todayYyyyMmDd_();
+      var dataForLog = clonePayloadWithDate_(data, effectiveDate);
+      createCalendarEvent(dataForLog, confirmationId, kind);
+      logBooking(dataForLog, confirmationId, kind);
+      return jsonResponse({ success: true, confirmationId: confirmationId });
+    }
+
+    var remaining = getRemainingSlots(data.date);
     if (remaining <= 0) {
       return jsonResponse({ success: false, error: 'No slots available for this date.' });
     }
-
-    const confirmationId = 'JL-' + new Date().getTime().toString(36).toUpperCase();
 
     createCalendarEvent(data, confirmationId, kind);
     logBooking(data, confirmationId, kind);
@@ -37,17 +41,27 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  const date = e.parameter.date;
+  var date = e.parameter.date;
   if (!date) {
     return jsonResponse({ error: 'Missing date parameter' });
   }
-  const remaining = getRemainingSlots(date);
+  var remaining = getRemainingSlots(date);
   return jsonResponse({ remaining: remaining });
 }
 
+function todayYyyyMmDd_() {
+  return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+}
+
+function clonePayloadWithDate_(data, ymd) {
+  var out = JSON.parse(JSON.stringify(data));
+  out.date = ymd;
+  return out;
+}
+
 function getRemainingSlots(dateStr) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  const data = sheet.getDataRange().getValues();
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  var data = sheet.getDataRange().getValues();
   var count = 0;
   for (var i = 1; i < data.length; i++) {
     if (data[i][1] === dateStr) count++;
@@ -57,10 +71,15 @@ function getRemainingSlots(dateStr) {
 
 function normalizeBookingKind_(raw) {
   var k = (raw || 'service').toString().toLowerCase().trim();
-  return k === 'general' ? 'general' : 'service';
+  if (k === 'contact') return 'contact';
+  if (k === 'general') return 'general';
+  return 'service';
 }
 
 function buildBookingCalendarTitle_(payload, kind) {
+  if (kind === 'contact') {
+    return 'JusLawns — Website message (not a booking)';
+  }
   if (kind === 'general') {
     return 'JusLawns — Callback / questions (not a service booking)';
   }
@@ -84,13 +103,21 @@ function buildBookingCalendarDescription_(payload, confirmationId, kind) {
   lines.push('Confirmation: ' + confirmationId);
   lines.push('');
 
-  if (kind === 'general') {
+  if (kind === 'contact') {
+    lines.push('REQUEST TYPE: Website contact form (not a lawn service booking)');
+    lines.push('Follow up by phone or email.');
+    lines.push('');
+    var msg = (payload.notes || '').toString().trim();
+    lines.push('MESSAGE');
+    lines.push(msg || '(empty)');
+    lines.push('');
+  } else if (kind === 'general') {
     lines.push('REQUEST TYPE: General callback (not a lawn service booking)');
     lines.push('Follow up by phone/email — not a crew dispatch unless you schedule one later.');
     lines.push('');
   }
 
-  lines.push('SERVICES');
+  lines.push('TOPIC / SERVICES');
   var raw = (payload.service || '').toString().trim();
   var services = raw
     ? raw.split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; })
@@ -113,15 +140,23 @@ function buildBookingCalendarDescription_(payload, confirmationId, kind) {
   lines.push('ADDRESS');
   lines.push((payload.street || '') + ', ' + (payload.city || '') + ' ' + (payload.zip || ''));
 
-  var notes = (payload.notes || '').toString().trim();
-  lines.push('');
-  lines.push('NOTES / ACCESS');
-  lines.push(notes || 'None');
+  if (kind !== 'contact') {
+    var notes = (payload.notes || '').toString().trim();
+    lines.push('');
+    lines.push('NOTES / ACCESS');
+    lines.push(notes || 'None');
+  }
 
   lines.push('');
-  lines.push('Preferred date: ' + (payload.date || ''));
+  lines.push('Sheet / event date: ' + (payload.date || ''));
 
   return lines.join('\n');
+}
+
+function calendarColorForKind_(kind) {
+  if (kind === 'contact') return COLOR_CONTACT_FORM;
+  if (kind === 'general') return COLOR_GENERAL_CALLBACK;
+  return COLOR_SERVICE_BOOKING;
 }
 
 function createCalendarEvent(data, confirmationId, kind) {
@@ -132,13 +167,13 @@ function createCalendarEvent(data, confirmationId, kind) {
   var description = buildBookingCalendarDescription_(data, confirmationId, kind);
 
   var event = calendar.createAllDayEvent(title, date, { description: description });
-  event.setColor(kind === 'general' ? COLOR_GENERAL_CALLBACK : COLOR_SERVICE_BOOKING);
+  event.setColor(calendarColorForKind_(kind));
 }
 
 function logBooking(data, confirmationId, kind) {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
   var status = 'submitted';
-  var bookingKind = kind === 'general' ? 'general' : 'service';
+  var bookingKind = kind === 'contact' ? 'contact' : kind === 'general' ? 'general' : 'service';
 
   sheet.appendRow([
     confirmationId,

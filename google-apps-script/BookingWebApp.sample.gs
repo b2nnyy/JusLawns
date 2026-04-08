@@ -6,10 +6,12 @@
  *   var title = buildBookingCalendarTitle_(payload);
  *   var description = buildBookingCalendarDescription_(payload);
  *
- * Payload from the website (BookService.jsx) includes:
- *   date, service (comma-separated labels), firstName, lastName, phone, email,
- *   street, city, zip, notes, paymentMethod (often empty — do not use for titles),
- *   bookingKind: "service" (default) or "general" for /book?kind=general (callback / questions — not a service visit).
+ * Payload from the website includes:
+ *   date, service, firstName, lastName, phone, email, street, city, zip, notes, paymentMethod,
+ *   bookingKind: "service" (book flow) | "contact" (contact form; script sets date to today) |
+ *   "general" (optional legacy).
+ *
+ * For doPost routing, prefer the logic in BookingWebApp.production.gs (slot bypass for contact).
  */
 
 /**
@@ -18,6 +20,9 @@
  */
 function buildBookingCalendarTitle_(payload) {
   var kind = (payload.bookingKind || 'service').toString().toLowerCase();
+  if (kind === 'contact') {
+    return 'JusLawns — Website message (not a booking)';
+  }
   if (kind === 'general') {
     return 'JusLawns — Callback / questions (not a service booking)';
   }
@@ -33,7 +38,6 @@ function buildBookingCalendarTitle_(payload) {
 
   if (services.length === 0) return 'JusLawns — Booking request';
 
-  // Use middle dot between services; trim if calendar title gets long
   var title = 'JusLawns — ' + services.join(' · ');
   if (title.length > 120) {
     title = title.substring(0, 117) + '…';
@@ -48,7 +52,13 @@ function buildBookingCalendarDescription_(payload) {
   var lines = [];
   var kind = (payload.bookingKind || 'service').toString().toLowerCase();
 
-  if (kind === 'general') {
+  if (kind === 'contact') {
+    lines.push('REQUEST TYPE: Website contact (not a service booking)');
+    lines.push('');
+    lines.push('MESSAGE');
+    lines.push((payload.notes || '').toString().trim() || '(empty)');
+    lines.push('');
+  } else if (kind === 'general') {
     lines.push('REQUEST TYPE: General callback (not a lawn service booking)');
     lines.push('Use this block to follow up by phone/email — not a crew dispatch.');
     lines.push('');
@@ -80,7 +90,7 @@ function buildBookingCalendarDescription_(payload) {
   lines.push((payload.street || '') + ', ' + (payload.city || '') + ' ' + (payload.zip || ''));
 
   var notes = (payload.notes || '').toString().trim();
-  if (notes) {
+  if (kind !== 'contact' && notes) {
     lines.push('');
     lines.push('NOTES / ACCESS');
     lines.push(notes);
