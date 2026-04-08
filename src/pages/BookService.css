@@ -7,6 +7,7 @@
 /* ── Service catalog (interactive multi-select) ── */
 .book-catalog {
   background: var(--warm-white);
+  scroll-margin-top: calc(var(--nav-height) + 12px);
 }
 
 .book-catalog__heading {

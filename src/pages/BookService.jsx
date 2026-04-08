@@ -193,20 +193,26 @@ export default function BookService({ openModal }) {
     document.getElementById('book-wizard')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const scrollToCatalog = () => {
+    document.getElementById('book-catalog')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   return (
     <>
       <PageIntro
         label="Services & Booking"
         title="Our Full Service Menu"
-        description="Tap the services you need, then scroll down to pick a date and submit your request. Select as many as you like — we'll follow up with your quote."
-        primaryLabel="Get My Free Quote"
-        onPrimaryAction={() => openModal?.()}
+        description="Start below by selecting the work you need—that keeps your request structured and easy for our team to track. Not sure what you need yet, have a special project, or questions first? Use Get a free quote and we'll help you figure it out."
+        primaryLabel="Choose my services"
+        onPrimaryAction={scrollToCatalog}
+        optionalLabel="Get a free quote"
+        onOptionalAction={() => openModal?.()}
         secondaryLabel="View Service Area"
         secondaryTo="/service-area"
       />
 
       {/* Interactive service catalog — multi-select */}
-      <section className="book-catalog section-padding">
+      <section id="book-catalog" className="book-catalog section-padding">
         <div className="container">
           <h2 className="book-catalog__heading">Select Your Services</h2>
           <p className="book-catalog__sub">

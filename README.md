@@ -111,6 +111,8 @@ The site was restructured to reduce friction and move buying information closer 
 
 Bookings are submitted from [`src/pages/BookService.jsx`](src/pages/BookService.jsx) to a deployed **Google Apps Script** web app (`APPS_SCRIPT_URL`). The script is **not** stored in this repository.
 
+**Calendar events:** If the event title shows something like `cash - pending`, that text is coming from your script, not the website. The site sends `service` as a comma-separated list of selected services and `paymentMethod` is usually empty. Copy the helpers in [`google-apps-script/BookingWebApp.sample.gs`](google-apps-script/BookingWebApp.sample.gs) into your project and use `buildBookingCalendarTitle_` and `buildBookingCalendarDescription_` for the event title and description (remove any title logic tied to payment status).
+
 After a booking row is appended successfully, add client confirmation email in the script’s `doPost` handler using `GmailApp.sendEmail()` (see the sample in your internal `cursor-prompt.md` or deployment notes). Requirements:
 
 - Run the script as a Google account that can send as **info@juslawns.com** (Gmail “Send mail as” alias or primary inbox).

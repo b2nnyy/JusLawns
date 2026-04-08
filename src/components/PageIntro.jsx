@@ -6,6 +6,8 @@ export default function PageIntro({
   description,
   primaryLabel,
   onPrimaryAction,
+  optionalLabel,
+  onOptionalAction,
   secondaryLabel,
   secondaryTo,
 }) {
@@ -13,13 +15,18 @@ export default function PageIntro({
     <section className="page-intro">
       <div className="page-intro__backdrop" />
       <div className="container page-intro__inner">
-        <p className="section-label section-label--light">{label}</p>
+        {label ? <p className="section-label section-label--light">{label}</p> : null}
         <h1 className="page-intro__title">{title}</h1>
         <p className="page-intro__description">{description}</p>
         <div className="page-intro__actions">
           {primaryLabel && (
-            <button className="btn btn-gold" onClick={onPrimaryAction}>
+            <button type="button" className="btn btn-gold" onClick={onPrimaryAction}>
               {primaryLabel}
+            </button>
+          )}
+          {optionalLabel && onOptionalAction && (
+            <button type="button" className="btn btn-outline" onClick={onOptionalAction}>
+              {optionalLabel}
             </button>
           )}
           {secondaryLabel && secondaryTo && (
