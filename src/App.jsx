@@ -37,10 +37,7 @@ function App() {
               path="/service-area"
               element={<ServiceAreaPage openModal={openModal} />}
             />
-            <Route
-              path="/contact-quote"
-              element={<ContactQuote openModal={openModal} />}
-            />
+            <Route path="/contact-quote" element={<ContactQuote />} />
             <Route path="/book" element={<BookService openModal={openModal} />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />

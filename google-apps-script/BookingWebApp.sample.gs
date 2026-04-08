@@ -8,7 +8,8 @@
  *
  * Payload from the website (BookService.jsx) includes:
  *   date, service (comma-separated labels), firstName, lastName, phone, email,
- *   street, city, zip, notes, paymentMethod (often empty — do not use for titles)
+ *   street, city, zip, notes, paymentMethod (often empty — do not use for titles),
+ *   bookingKind: "service" (default) or "general" for /book?kind=general (callback / questions — not a service visit).
  */
 
 /**
@@ -16,6 +17,11 @@
  * Splits payload.service on commas (multi-select bookings).
  */
 function buildBookingCalendarTitle_(payload) {
+  var kind = (payload.bookingKind || 'service').toString().toLowerCase();
+  if (kind === 'general') {
+    return 'JusLawns — Callback / questions (not a service booking)';
+  }
+
   var raw = (payload.service || '').toString().trim();
   if (!raw) return 'JusLawns — Booking request';
 
@@ -40,6 +46,13 @@ function buildBookingCalendarTitle_(payload) {
  */
 function buildBookingCalendarDescription_(payload) {
   var lines = [];
+  var kind = (payload.bookingKind || 'service').toString().toLowerCase();
+
+  if (kind === 'general') {
+    lines.push('REQUEST TYPE: General callback (not a lawn service booking)');
+    lines.push('Use this block to follow up by phone/email — not a crew dispatch.');
+    lines.push('');
+  }
 
   lines.push('SERVICES');
   var raw = (payload.service || '').toString().trim();

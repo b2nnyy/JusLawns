@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { FiPhone, FiMail, FiMapPin, FiHome, FiClock, FiCheckCircle } from 'react-icons/fi';
 import { businessInfo, serviceDropdownOptions } from '../data/siteData';
 
@@ -26,10 +27,10 @@ export default function Contact() {
           setSubmitted(true);
         }
       } catch {
-        window.location.href = `mailto:${businessInfo.email}?subject=Quote Request`;
+        window.location.href = `mailto:${businessInfo.email}?subject=${encodeURIComponent('Website contact')}`;
       }
     } else {
-      window.location.href = `mailto:${businessInfo.email}?subject=Quote Request`;
+      window.location.href = `mailto:${businessInfo.email}?subject=${encodeURIComponent('Website contact')}`;
     }
     setSubmitting(false);
   };
@@ -43,15 +44,28 @@ export default function Contact() {
   ];
 
   return (
-    <section className="contact section-padding" id="contact">
+    <section className="contact" id="contact">
       <div className="container contact__grid">
         <div className="contact__info">
-          <p className="section-label">Get in Touch</p>
-          <h2>Let's Talk About Your&nbsp;Property</h2>
+          <p className="section-label">Contact</p>
+          <h1 className="contact__page-title">We're here to help</h1>
+          <h2>Questions, concerns, or feedback</h2>
           <p className="contact__intro">
-            Reach out anytime — we'll get back to you with a free quote,
-            usually within a few hours.
+            Reach out for billing questions, service issues, general inquiries, or anything else on your mind.
+            We read every message and respond as soon as we can.
           </p>
+
+          <div className="contact__scheduling">
+            <p className="contact__scheduling-label">Prefer a scheduled time?</p>
+            <div className="contact__scheduling-actions">
+              <Link to="/book" className="btn btn-outline">
+                Book lawn service
+              </Link>
+              <Link to="/book?kind=general" className="btn btn-outline">
+                Request a callback (same calendar, no service yet)
+              </Link>
+            </div>
+          </div>
 
           <div className="contact__items">
             {contactItems.map((item, i) => (
@@ -71,12 +85,12 @@ export default function Contact() {
           {submitted ? (
             <div className="contact__success">
               <FiCheckCircle size={40} color="var(--green-accent)" />
-              <h3>Thank You!</h3>
-              <p>We received your quote request and will be in touch shortly.</p>
+              <h3>Thank you</h3>
+              <p>We received your message and will get back to you shortly.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
-              <h3>Request a Free Quote</h3>
+              <h3>Send us a message</h3>
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="c-name">Full Name</label>
@@ -92,30 +106,30 @@ export default function Contact() {
                 <input type="email" id="c-email" name="email" required />
               </div>
               <div className="form-group">
-                <label htmlFor="c-address">Property Address</label>
+                <label htmlFor="c-address">Property address (optional)</label>
                 <input type="text" id="c-address" name="address" />
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="c-service">Service Needed</label>
-                  <select id="c-service" name="service" required>
-                    <option value="">Select a service...</option>
+                  <label htmlFor="c-service">Topic or service (optional)</label>
+                  <select id="c-service" name="service" defaultValue="">
+                    <option value="">—</option>
                     {serviceDropdownOptions.map((opt, i) => (
                       <option key={i} value={opt}>{opt}</option>
                     ))}
                   </select>
                 </div>
                 <div className="form-group">
-                  <label htmlFor="c-date">Preferred Date</label>
+                  <label htmlFor="c-date">Preferred date (optional)</label>
                   <input type="date" id="c-date" name="date" />
                 </div>
               </div>
               <div className="form-group">
                 <label htmlFor="c-message">Message</label>
-                <textarea id="c-message" name="message" rows="4" />
+                <textarea id="c-message" name="message" rows="4" required />
               </div>
               <button type="submit" className="btn btn-gold contact__submit" disabled={submitting}>
-                {submitting ? 'Sending...' : 'Send My Quote Request →'}
+                {submitting ? 'Sending...' : 'Send message'}
               </button>
             </form>
           )}
@@ -125,6 +139,15 @@ export default function Contact() {
       <style>{`
         .contact {
           background: var(--cream);
+          padding-top: calc(var(--nav-height) + 64px);
+          padding-bottom: 100px;
+        }
+        .contact__page-title {
+          font-family: var(--font-display);
+          font-size: clamp(1.75rem, 4vw, 2.25rem);
+          color: var(--charcoal);
+          margin: 0 0 16px;
+          line-height: 1.2;
         }
         .contact__grid {
           display: grid;
@@ -139,7 +162,24 @@ export default function Contact() {
           color: var(--text-muted);
           font-size: 0.95rem;
           line-height: 1.7;
-          margin-bottom: 32px;
+          margin-bottom: 24px;
+        }
+        .contact__scheduling {
+          margin-bottom: 28px;
+          padding: 20px;
+          background: rgba(74, 140, 82, 0.08);
+          border-radius: var(--radius);
+        }
+        .contact__scheduling-label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--charcoal);
+          margin: 0 0 12px;
+        }
+        .contact__scheduling-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
         }
         .contact__items {
           display: flex;
@@ -220,6 +260,14 @@ export default function Contact() {
         @media (max-width: 640px) {
           .contact__form-card {
             padding: 24px 20px;
+          }
+          .contact__scheduling-actions {
+            flex-direction: column;
+            align-items: stretch;
+          }
+          .contact__scheduling-actions .btn {
+            text-align: center;
+            justify-content: center;
           }
         }
       `}</style>

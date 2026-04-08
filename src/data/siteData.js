@@ -16,6 +16,14 @@ export const businessInfo = {
   secondaryCTA: "Book Lawn Service",
 };
 
+/**
+ * Free “callback first” flow: `/book?kind=general` posts the same Apps Script URL with bookingKind: 'general'.
+ * Calendar title/description helpers should treat this as not a lawn service booking.
+ */
+export const generalCallbackBooking = {
+  calendarServiceLabel: 'Callback — questions or concerns (not a service visit)',
+};
+
 export const aboutCopy = {
   paragraphs: [
     "Jus Lawns provides reliable lawn care services designed to make property maintenance simple and stress-free for homeowners.",
