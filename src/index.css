@@ -262,3 +262,19 @@ h3 {
     padding: 0 16px;
   }
 }
+
+/* --- Home Social Promo --- */
+.home-social-promo {
+  padding-top: 48px;
+  background: var(--cream);
+}
+
+.home-social-promo__text {
+  margin: 0 0 18px;
+  font-size: 1.05rem;
+  color: var(--text-body);
+}
+
+.home-social-promo__link {
+  border-width: 1.5px;
+}
