@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
 import { HashRouter, Route, Routes } from 'react-router-dom';
-import LoginGate from './components/LoginGate';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import QuoteModal from './components/QuoteModal';
@@ -25,32 +24,30 @@ function App() {
   }, []);
 
   return (
-    <LoginGate>
-      <HashRouter>
-        <ScrollToTop />
-        <Navbar openModal={openModal} />
-        <main>
-          <Routes>
-            <Route path="/" element={<Home openModal={openModal} />} />
-            <Route path="/services-pricing" element={<ServicesPricing />} />
-            <Route
-              path="/service-area"
-              element={<ServiceAreaPage openModal={openModal} />}
-            />
-            <Route path="/contact-quote" element={<ContactQuote />} />
-            <Route path="/book" element={<BookService openModal={openModal} />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-          </Routes>
-        </main>
-        <Footer />
-        <QuoteModal
-          isOpen={modal.open}
-          preselectedService={modal.service}
-          onClose={closeModal}
-        />
-      </HashRouter>
-    </LoginGate>
+    <HashRouter>
+      <ScrollToTop />
+      <Navbar openModal={openModal} />
+      <main>
+        <Routes>
+          <Route path="/" element={<Home openModal={openModal} />} />
+          <Route path="/services-pricing" element={<ServicesPricing />} />
+          <Route
+            path="/service-area"
+            element={<ServiceAreaPage openModal={openModal} />}
+          />
+          <Route path="/contact-quote" element={<ContactQuote />} />
+          <Route path="/book" element={<BookService openModal={openModal} />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/privacy" element={<Privacy />} />
+        </Routes>
+      </main>
+      <Footer />
+      <QuoteModal
+        isOpen={modal.open}
+        preselectedService={modal.service}
+        onClose={closeModal}
+      />
+    </HashRouter>
   );
 }
 
